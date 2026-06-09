@@ -4,10 +4,8 @@
 //
 // IMPORTANT: this page is wrapped by the root <html><body> in app/layout.tsx.
 // It MUST NOT render its own html/head/body — that causes nested <html>
-// and a React hydration mismatch. The wrapper div with inset:0 covers and
-// resets the admin's body gradient so the preview is a clean canvas.
-import { getSqlite } from "../../../lib/db/client";
-import { ensureDbReady } from "../../../lib/db/ensure-db";
+// and a React hydration mismatch.
+import { getPool } from "../../../lib/db/client";
 import { BlockRenderer, type RenderBlock } from "../../../components/composer/BlockRenderer";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "../../../lib/auth/session";
@@ -15,37 +13,61 @@ import { getCurrentUser } from "../../../lib/auth/session";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-export default async function PreviewHome({ searchParams }: { searchParams: { selected?: string; device?: string } }) {
+export default async function PreviewHome({
+  searchParams,
+}: {
+  searchParams: { selected?: string; device?: string };
+}) {
   const user = await getCurrentUser();
   if (!user) redirect("/sign-in?next=/preview/home");
 
-  const db = getSqlite();
-  ensureDbReady(db);
+  // getPool() triggers ensureDbReady internally on first call — no separate call needed.
+  const pool = await getPool();
 
-  const blocks = (db.prepare(`SELECT * FROM page_block WHERE page_key = 'home' ORDER BY position`).all() as any[]).map((b): RenderBlock => ({
-    id: b.id,
-    type: b.block_type,
-    label: b.label,
-    subtitle: b.subtitle,
-    fields: safeJson(b.fields_json),
-    style: safeJson(b.style_json),
-    htmlPayload: b.html_payload,
-    isEnabled: !!b.is_enabled,
+  const blocksRes = await pool.query<any>(
+    "SELECT * FROM page_block WHERE page_key = 'home' ORDER BY position",
+  );
+  const blocks = blocksRes.rows.map(
+    (b): RenderBlock => ({
+      id: b.id,
+      type: b.block_type,
+      label: b.label,
+      subtitle: b.subtitle,
+      fields: safeJson(b.fields_json),
+      style: safeJson(b.style_json),
+      htmlPayload: b.html_payload,
+      isEnabled: !!b.is_enabled,
+    }),
+  );
+
+  const lanesRes = await pool.query<any>(
+    "SELECT * FROM lane ORDER BY sort_order",
+  );
+  const lanes = lanesRes.rows.map((l) => ({
+    id: l.slug,
+    name: l.name,
+    audience: l.audience,
+    purpose: l.purpose,
   }));
 
-  const lanes = (db.prepare(`SELECT * FROM lane ORDER BY sort_order`).all() as any[]).map((l) => ({
-    id: l.slug, name: l.name, audience: l.audience, purpose: l.purpose,
-  }));
-  const capabilities = (db.prepare(`SELECT c.*, t.route_template FROM capability c LEFT JOIN tile t ON t.capability_id = c.id ORDER BY c.sort_order`).all() as any[]).map((c) => ({
-    id: c.slug, name: c.name, shortName: c.short_name, type: c.type, status: c.status,
-    description: c.description, enabled: !!c.enabled,
+  const capsRes = await pool.query<any>(
+    `SELECT c.*, t.route_template
+     FROM capability c
+     LEFT JOIN tile t ON t.capability_id = c.id
+     ORDER BY c.sort_order`,
+  );
+  const capabilities = capsRes.rows.map((c) => ({
+    id: c.slug,
+    name: c.name,
+    shortName: c.short_name,
+    type: c.type,
+    status: c.status,
+    description: c.description,
+    enabled: !!c.enabled,
   }));
 
   const selected = searchParams.selected ?? null;
 
-  // Wrapper styles: position:fixed inset:0 + background:white covers the
-  // admin body's teal gradient. overflow:auto lets long pages scroll.
-  // color: reset for inherited admin ink color.
   return (
     <div
       data-preview-canvas
@@ -87,4 +109,10 @@ export default async function PreviewHome({ searchParams }: { searchParams: { se
   );
 }
 
-function safeJson(s: string | null | undefined) { try { return JSON.parse(s ?? "{}"); } catch { return {}; } }
+function safeJson(s: string | null | undefined) {
+  try {
+    return JSON.parse(s ?? "{}");
+  } catch {
+    return {};
+  }
+}

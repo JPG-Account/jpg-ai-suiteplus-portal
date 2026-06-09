@@ -4,7 +4,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { withSuperAdmin } from "../../../../lib/auth/guard";
-import { getSqlite } from "../../../../lib/db/client";
+import { getPool } from "../../../../lib/db/client";
 import { writeAudit } from "../../../../lib/audit";
 
 export const dynamic = "force-dynamic";
@@ -21,31 +21,58 @@ export const POST = withSuperAdmin(async (req, ctx) => {
   const body = await req.json().catch(() => null);
   const parsed = Body.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: "bad_request", details: parsed.error.flatten() }, { status: 400 });
+    return NextResponse.json(
+      { error: "bad_request", details: parsed.error.flatten() },
+      { status: 400 },
+    );
   }
   const { revisionNumber, notes } = parsed.data;
 
-  const db = getSqlite();
-  const target = db.prepare(`SELECT * FROM config_revision WHERE revision_number = ?`).get(revisionNumber) as any;
+  const pool = await getPool();
+  const { rows: targetRows } = await pool.query<any>(
+    "SELECT * FROM config_revision WHERE revision_number = $1",
+    [revisionNumber],
+  );
+  const target = targetRows[0];
   if (!target) {
-    return NextResponse.json({ error: "not_found", message: "Revision does not exist" }, { status: 404 });
+    return NextResponse.json(
+      { error: "not_found", message: "Revision does not exist" },
+      { status: 404 },
+    );
   }
   if (target.is_current) {
-    return NextResponse.json({ error: "noop", message: "Revision is already current" }, { status: 409 });
+    return NextResponse.json(
+      { error: "noop", message: "Revision is already current" },
+      { status: 409 },
+    );
   }
 
   // V0.7.1 fix #3 — read `current` INSIDE the transaction so audit lineage
   // (rolledBackFrom + before_json) is accurate under concurrent rollback calls.
   let rolledBackFrom: number | null = null;
-  const txn = db.transaction(() => {
-    const cur = db.prepare(`SELECT revision_number FROM config_revision WHERE is_current = 1`).get() as any;
-    rolledBackFrom = cur?.revision_number ?? null;
-    db.prepare(`UPDATE config_revision SET is_current = 0 WHERE is_current = 1`).run();
-    db.prepare(`UPDATE config_revision SET is_current = 1 WHERE revision_number = ?`).run(revisionNumber);
-  });
-  txn();
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    const curRes = await client.query<any>(
+      "SELECT revision_number FROM config_revision WHERE is_current = TRUE",
+    );
+    rolledBackFrom = curRes.rows[0]?.revision_number ?? null;
+    await client.query(
+      "UPDATE config_revision SET is_current = FALSE WHERE is_current = TRUE",
+    );
+    await client.query(
+      "UPDATE config_revision SET is_current = TRUE WHERE revision_number = $1",
+      [revisionNumber],
+    );
+    await client.query("COMMIT");
+  } catch (e) {
+    await client.query("ROLLBACK");
+    throw e;
+  } finally {
+    client.release();
+  }
 
-  writeAudit({
+  await writeAudit({
     actorUserId: ctx.user.id,
     action: "rollback",
     entityType: "config_revision",
@@ -58,7 +85,10 @@ export const POST = withSuperAdmin(async (req, ctx) => {
   const portalBase = process.env.PORTAL_BASE_URL;
   const secret = process.env.REVALIDATE_SECRET;
   if (portalBase && secret) {
-    fetch(`${portalBase}/api/revalidate?tag=suite-config&secret=${encodeURIComponent(secret)}`, { method: "POST" }).catch(() => {});
+    fetch(
+      `${portalBase}/api/revalidate?tag=suite-config&secret=${encodeURIComponent(secret)}`,
+      { method: "POST" },
+    ).catch(() => {});
   }
 
   return NextResponse.json({

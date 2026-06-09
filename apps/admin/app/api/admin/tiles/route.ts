@@ -1,19 +1,20 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { z } from "zod";
 import { withSuperAdmin } from "../../../../lib/auth/guard";
-import { getSqlite } from "../../../../lib/db/client";
+import { getPool } from "../../../../lib/db/client";
 import { writeAudit } from "../../../../lib/audit";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export const GET = withSuperAdmin(async () => {
-  const rows = getSqlite().prepare(`
-    SELECT t.*, c.slug AS capability_slug, c.name AS capability_name
-    FROM tile t
-    INNER JOIN capability c ON c.id = t.capability_id
-    ORDER BY t.sort_order
-  `).all() as any[];
+  const pool = await getPool();
+  const { rows } = await pool.query<any>(
+    `SELECT t.*, c.slug AS capability_slug, c.name AS capability_name
+     FROM tile t
+     INNER JOIN capability c ON c.id = t.capability_id
+     ORDER BY t.sort_order`,
+  );
   return NextResponse.json({
     tiles: rows.map((t) => ({
       id: t.id,
@@ -32,8 +33,6 @@ export const GET = withSuperAdmin(async () => {
 // V0.7.1 fix #2 — cross-field consistency between routeKind and externalUrl:
 //   external      → externalUrl MUST be a valid URL (not null/missing)
 //   internal/soon → externalUrl MUST be null/absent
-// The portal renderer is tolerant today but a future trust-routeKind-only
-// refactor would silently break tiles. Catch the impossible state here.
 const PatchBody = z
   .object({
     id: z.string(),
@@ -50,7 +49,7 @@ const PatchBody = z
       if (v.routeKind === "internal" || v.routeKind === "soon") {
         return v.externalUrl == null;
       }
-      return true; // routeKind not in patch — leave existing pairing alone
+      return true;
     },
     {
       message:
@@ -63,27 +62,46 @@ export const PATCH = withSuperAdmin(async (req, ctx) => {
   const body = await req.json().catch(() => null);
   const parsed = PatchBody.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: "bad_request", details: parsed.error.flatten() }, { status: 400 });
+    return NextResponse.json(
+      { error: "bad_request", details: parsed.error.flatten() },
+      { status: 400 },
+    );
   }
   const { id, ...patch } = parsed.data;
 
-  const db = getSqlite();
-  const before = db.prepare(`SELECT * FROM tile WHERE id = ?`).get(id) as any;
+  const pool = await getPool();
+  const { rows: beforeRows } = await pool.query<any>(
+    "SELECT * FROM tile WHERE id = $1",
+    [id],
+  );
+  const before = beforeRows[0];
   if (!before) return NextResponse.json({ error: "not_found" }, { status: 404 });
 
   const fields: string[] = [];
   const values: any[] = [];
-  if (patch.routeKind !== undefined) { fields.push("route_kind = ?"); values.push(patch.routeKind); }
-  if (patch.routeTemplate !== undefined) { fields.push("route_template = ?"); values.push(patch.routeTemplate); }
-  if (patch.externalUrl !== undefined) { fields.push("external_url = ?"); values.push(patch.externalUrl); }
-  if (patch.visibility !== undefined) { fields.push("visibility = ?"); values.push(patch.visibility); }
+  let pos = 1;
+  const add = (col: string, val: any) => {
+    fields.push(`${col} = $${pos++}`);
+    values.push(val);
+  };
+  if (patch.routeKind !== undefined) add("route_kind", patch.routeKind);
+  if (patch.routeTemplate !== undefined) add("route_template", patch.routeTemplate);
+  if (patch.externalUrl !== undefined) add("external_url", patch.externalUrl);
+  if (patch.visibility !== undefined) add("visibility", patch.visibility);
 
   if (fields.length === 0) return NextResponse.json({ ok: true, unchanged: true });
 
-  db.prepare(`UPDATE tile SET ${fields.join(", ")} WHERE id = ?`).run(...values, id);
-  const after = db.prepare(`SELECT * FROM tile WHERE id = ?`).get(id);
+  const sql = `UPDATE tile SET ${fields.join(", ")} WHERE id = $${pos}`;
+  values.push(id);
+  await pool.query(sql, values);
 
-  writeAudit({
+  const { rows: afterRows } = await pool.query<any>(
+    "SELECT * FROM tile WHERE id = $1",
+    [id],
+  );
+  const after = afterRows[0];
+
+  await writeAudit({
     actorUserId: ctx.user.id,
     action: "tile.updated",
     entityType: "tile",

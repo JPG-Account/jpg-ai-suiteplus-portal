@@ -53,13 +53,15 @@ const Fields = z.object({
 
 async function validateLaneIds(pool: any, primary: string, secondary: string[]) {
   const all = Array.from(new Set([primary, ...secondary]));
-  const res = await pool.query<any>(
+  // Note: pool is typed `any`, so we can't pass a type arg to .query() —
+  // TS strict mode forbids type args on calls to untyped values.
+  const res = await pool.query(
     `SELECT id FROM lane WHERE id = ANY($1::text[])`,
     [all],
   );
   const found = new Set(res.rows.map((r: any) => r.id));
   const missing = all.filter((id) => !found.has(id));
-  return missing;
+  return missing as string[];
 }
 
 // ───────────────────── PATCH — full update OR enabled-only ──────────────

@@ -7,10 +7,7 @@
     "build": "next build",
     "start": "next start -p 3011",
     "lint": "next lint",
-    "tsc": "tsc --noEmit",
-    "db:migrate": "tsx scripts/migrate.ts",
-    "db:seed": "tsx scripts/seed.ts",
-    "db:reset": "rm -f data/suite-plus.sqlite && pnpm db:migrate && pnpm db:seed"
+    "tsc": "tsc --noEmit"
   },
   "dependencies": {
     "drizzle-orm": "0.36.0",

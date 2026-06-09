@@ -1,12 +1,15 @@
 import { NextResponse } from "next/server";
 import { withSuperAdmin } from "../../../../lib/auth/guard";
-import { getSqlite } from "../../../../lib/db/client";
+import { getPool } from "../../../../lib/db/client";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export const GET = withSuperAdmin(async () => {
-  const rows = getSqlite().prepare(`SELECT * FROM capability ORDER BY sort_order`).all() as any[];
+  const pool = await getPool();
+  const { rows } = await pool.query<any>(
+    "SELECT * FROM capability ORDER BY sort_order",
+  );
   return NextResponse.json({
     capabilities: rows.map((c) => ({
       id: c.id,

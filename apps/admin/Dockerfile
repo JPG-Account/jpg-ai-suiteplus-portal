@@ -47,6 +47,9 @@ RUN addgroup --system --gid 1001 nodejs \
 COPY --from=builder --chown=nextjs:nodejs /repo/apps/admin/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /repo/apps/admin/.next/static ./apps/admin/.next/static
 COPY --from=builder --chown=nextjs:nodejs /repo/apps/admin/public ./apps/admin/public
+# Ops scripts run via cf run-task. Outside Next's standalone trace graph
+# so we ship them explicitly.
+COPY --from=builder --chown=nextjs:nodejs /repo/apps/admin/scripts ./apps/admin/scripts
 
 USER nextjs
 EXPOSE 8080

@@ -25,6 +25,25 @@ IMAGE_SHA="${IMAGE_SHA:-latest}"
 PORTAL_IMAGE="ghcr.io/jpg-account/ust-ai-suiteplus-portal:${IMAGE_SHA}"
 ADMIN_IMAGE="ghcr.io/jpg-account/ust-ai-suiteplus-portal-admin:${IMAGE_SHA}"
 
+# ─── GHCR auth mode ─────────────────────────────────────────────────────────
+# Public packages:  no env vars needed; script uses anonymous token dance.
+# Private packages: set CF_DOCKER_USERNAME + CF_DOCKER_PASSWORD before running.
+#
+# Example for private mode:
+#   export CF_DOCKER_USERNAME=jpgalido-txm
+#   export CF_DOCKER_PASSWORD=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  # PAT with read:packages
+#   IMAGE_SHA=latest ./scripts/bas-deploy.sh
+#
+# The PAT must have the `read:packages` scope. Create at
+# https://github.com/settings/tokens/new
+PRIVATE_MODE="false"
+DOCKER_CREDS_ARGS=""
+if [ -n "${CF_DOCKER_USERNAME:-}" ] && [ -n "${CF_DOCKER_PASSWORD:-}" ]; then
+  PRIVATE_MODE="true"
+  # cf push reads CF_DOCKER_PASSWORD from env automatically — just pass --docker-username.
+  DOCKER_CREDS_ARGS="--docker-username ${CF_DOCKER_USERNAME}"
+fi
+
 bold() { printf "\n\033[1m%s\033[0m\n" "$*"; }
 ok()   { printf "  \033[32m✓\033[0m %s\n" "$*"; }
 warn() { printf "  \033[33m!\033[0m %s\n" "$*"; }
@@ -40,26 +59,44 @@ cf services | grep -q "^$DB_SERVICE\s" \
   && ok "$DB_SERVICE is bound and ready" \
   || fail "Service $DB_SERVICE not found. Cannot proceed."
 
-bold "STEP 2 — Pre-flight: GHCR images are PUBLIC (anonymous pull)"
+if [ "$PRIVATE_MODE" = "true" ]; then
+  bold "STEP 2 — Pre-flight: GHCR images are PULLABLE (private mode, auth as ${CF_DOCKER_USERNAME})"
+else
+  bold "STEP 2 — Pre-flight: GHCR images are PUBLIC (anonymous pull)"
+fi
+
 # GHCR returns 401 on a naked manifest fetch even for public packages; the
-# correct anonymous-pull flow is /token first, then use the bearer.
-# docker pull and `cf push --docker-image` handle this dance automatically.
+# correct flow is /token first, then use the bearer. docker pull and
+# `cf push --docker-image` handle this dance automatically.
+#
+# Public mode:  anonymous /token returns a pull-only bearer.
+# Private mode: basic auth on /token (user:PAT) returns a scoped bearer.
 ACCEPT="application/vnd.oci.image.manifest.v1+json,application/vnd.docker.distribution.manifest.v2+json,application/vnd.oci.image.index.v1+json,application/vnd.docker.distribution.manifest.list.v2+json"
 for img in "$PORTAL_IMAGE" "$ADMIN_IMAGE"; do
   # Strip ghcr.io/ prefix and :tag suffix to get the repo path for the scope.
   repo="${img#ghcr.io/}"; repo="${repo%:*}"
   tag="${img##*:}"
-  token=$(curl -fsS "https://ghcr.io/token?service=ghcr.io&scope=repository:${repo}:pull" 2>/dev/null | sed 's/.*"token":"\([^"]*\)".*/\1/' || true)
+  token_url="https://ghcr.io/token?service=ghcr.io&scope=repository:${repo}:pull"
+  if [ "$PRIVATE_MODE" = "true" ]; then
+    token=$(curl -fsS -u "${CF_DOCKER_USERNAME}:${CF_DOCKER_PASSWORD}" "$token_url" 2>/dev/null | sed 's/.*"token":"\([^"]*\)".*/\1/' || true)
+  else
+    token=$(curl -fsS "$token_url" 2>/dev/null | sed 's/.*"token":"\([^"]*\)".*/\1/' || true)
+  fi
   if [ -z "$token" ]; then
-    warn "$img — could not get anonymous token (package likely still private)"
-    warn "  Set packages PUBLIC at https://github.com/orgs/JPG-Account/packages"
+    if [ "$PRIVATE_MODE" = "true" ]; then
+      warn "$img — token endpoint refused credentials. PAT may be wrong or missing read:packages scope."
+    else
+      warn "$img — could not get anonymous token (package is private)"
+      warn "  Either set packages PUBLIC at https://github.com/orgs/JPG-Account/packages"
+      warn "  OR run with CF_DOCKER_USERNAME + CF_DOCKER_PASSWORD env vars (private mode)"
+    fi
     exit 1
   fi
   code=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $token" -H "Accept: $ACCEPT" "https://ghcr.io/v2/${repo}/manifests/${tag}")
   if [ "$code" = "200" ]; then
-    ok "$img — public, pullable"
+    ok "$img — pullable ($([ "$PRIVATE_MODE" = "true" ] && echo "private/auth" || echo "public"))"
   else
-    warn "$img — manifest fetch HTTP $code with anonymous token (tag may not exist)"
+    warn "$img — manifest fetch HTTP $code (tag '${tag}' may not exist)"
     warn "  Confirm the build-image workflow ran for commit $IMAGE_SHA"
     exit 1
   fi
@@ -78,15 +115,19 @@ fi
 bold "STEP 4 — Deploy PORTAL"
 # First deploy: NO --strategy rolling (CF rejects without a prior instance).
 # Subsequent re-deploys: change `STRATEGY` env var to '--strategy rolling'.
+# Private-mode: $DOCKER_CREDS_ARGS passes --docker-username; cf reads
+# CF_DOCKER_PASSWORD from env so the PAT never appears on the command line.
 STRATEGY="${STRATEGY:-}"
 cf push -f apps/portal/manifest.yml \
   --docker-image "$PORTAL_IMAGE" \
+  $DOCKER_CREDS_ARGS \
   $STRATEGY
 ok "Portal app deployed"
 
 bold "STEP 5 — Deploy ADMIN (binds $DB_SERVICE via manifest)"
 cf push -f apps/admin/manifest.yml \
   --docker-image "$ADMIN_IMAGE" \
+  $DOCKER_CREDS_ARGS \
   $STRATEGY
 ok "Admin app deployed and bound to Postgres"
 
@@ -138,4 +179,7 @@ echo "  Admin:   $ADMIN_URL"
 echo ""
 echo "Open the set-password URL printed above in your browser to set the super-admin password."
 echo ""
-echo "Next-deploy hint: STRATEGY='--strategy rolling' IMAGE_SHA='<short-sha>' ./scripts/bas-deploy.sh"
+echo "Next-deploy hints:"
+echo "  • Public packages:  IMAGE_SHA=<sha> STRATEGY='--strategy rolling' ./scripts/bas-deploy.sh"
+echo "  • Private packages: CF_DOCKER_USERNAME=jpgalido-txm CF_DOCKER_PASSWORD=<PAT> \\"
+echo "                      IMAGE_SHA=<sha> STRATEGY='--strategy rolling' ./scripts/bas-deploy.sh"

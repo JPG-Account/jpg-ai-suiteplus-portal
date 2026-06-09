@@ -62,15 +62,29 @@ if (!PRIMARY_EMAIL) {
   }
   console.log(`[FIX] Renamed u_super_admin → email=${r1.rows[0].email}`);
 
-  // ─── 2) Create second super admin if requested ─────────────────────
+  // ─── 2) Ensure second super admin if requested ─────────────────────
+  // Idempotent: handles both "this email is new" AND "user already exists
+  // (e.g. created via admin UI's New user button)" cases.
   if (SECOND_EMAIL && SECOND_EMAIL !== PRIMARY_EMAIL) {
-    const userId = "u_super_admin_2";
-    await pool.query(
-      `INSERT INTO user_account (id, email, display_name, created_at)
-       VALUES ($1, $2, $3, $4)
-       ON CONFLICT (id) DO UPDATE SET email = EXCLUDED.email`,
-      [userId, SECOND_EMAIL, "Super Admin (ust-global)", now],
+    // Lookup by email first — user may have been created via UI with a different id
+    const existingRes = await pool.query(
+      "SELECT id, display_name FROM user_account WHERE email = $1",
+      [SECOND_EMAIL],
     );
+
+    let userId;
+    if (existingRes.rowCount > 0) {
+      userId = existingRes.rows[0].id;
+      console.log(`[FIX] User with email=${SECOND_EMAIL} already exists (id=${userId}, display='${existingRes.rows[0].display_name}') — adopting that row`);
+    } else {
+      userId = "u_super_admin_2";
+      await pool.query(
+        `INSERT INTO user_account (id, email, display_name, created_at)
+         VALUES ($1, $2, $3, $4)`,
+        [userId, SECOND_EMAIL, "Super Admin (ust-global)", now],
+      );
+      console.log(`[FIX] Created new user id=${userId} email=${SECOND_EMAIL}`);
+    }
 
     // Ensure super_admin role exists for this user (idempotent)
     const roleRes = await pool.query(
@@ -82,34 +96,50 @@ if (!PRIMARY_EMAIL) {
         "INSERT INTO role_mapping (id, user_id, role, granted_at) VALUES ($1, $2, 'super_admin', $3)",
         [randomUUID(), userId, now],
       );
+      console.log(`[FIX] Granted super_admin role to user_id=${userId}`);
+    } else {
+      console.log(`[FIX] User id=${userId} already has super_admin role`);
     }
 
-    // Clear stale password_credential + unconsumed reset tokens for clean slate
-    await pool.query("DELETE FROM password_credential WHERE user_id = $1", [userId]);
-    await pool.query(
-      "DELETE FROM password_reset_token WHERE user_id = $1 AND consumed_at IS NULL",
-      [userId],
+    // Check password state — only mint a new token if neither a password nor
+    // a live unconsumed token exists. Avoids invalidating a link the user is
+    // about to click from the UI's "Reset password" flow.
+    const credRes = await pool.query("SELECT 1 FROM password_credential WHERE user_id = $1", [userId]);
+    const liveTokenRes = await pool.query(
+      "SELECT 1 FROM password_reset_token WHERE user_id = $1 AND consumed_at IS NULL AND expires_at > $2",
+      [userId, now],
     );
 
-    // Mint fresh set-password token (72h)
-    const rawToken = randomBytes(32).toString("base64url");
-    const tokenHash = createHash("sha256").update(rawToken).digest("hex");
-    const expiresAt = now + 72 * 60 * 60 * 1000;
-    await pool.query(
-      `INSERT INTO password_reset_token (token_hash, user_id, expires_at, created_at)
-       VALUES ($1, $2, $3, $4)`,
-      [tokenHash, userId, expiresAt, now],
-    );
-
-    console.log(`[FIX] Created u_super_admin_2 → email=${SECOND_EMAIL}`);
-    console.warn("");
-    console.warn("\x1b[33m═══════════════════════════════════════════════════════════════");
-    console.warn(`  SECOND SUPER ADMIN PASSWORD SETUP`);
-    console.warn(`  Email: ${SECOND_EMAIL}`);
-    console.warn(`  Open this URL within 72h to set the password:`);
-    console.warn(`  ${ADMIN_BASE_URL}/set-password?token=${rawToken}`);
-    console.warn("═══════════════════════════════════════════════════════════════\x1b[0m");
-    console.warn("");
+    if (credRes.rowCount > 0) {
+      console.log(`[FIX] User id=${userId} already has a password — done`);
+    } else if (liveTokenRes.rowCount > 0) {
+      console.log(`[FIX] User id=${userId} has a LIVE unconsumed set-password token — not minting a new one`);
+      console.log(`[FIX] If you've lost that link, re-run with FORCE_MINT_TOKEN=true`);
+    } else if (process.env.FORCE_MINT_TOKEN === "true" || liveTokenRes.rowCount === 0) {
+      // Wipe any expired/consumed tokens (clean slate) then mint fresh
+      if (process.env.FORCE_MINT_TOKEN === "true") {
+        await pool.query(
+          "DELETE FROM password_reset_token WHERE user_id = $1 AND consumed_at IS NULL",
+          [userId],
+        );
+      }
+      const rawToken = randomBytes(32).toString("base64url");
+      const tokenHash = createHash("sha256").update(rawToken).digest("hex");
+      const expiresAt = now + 72 * 60 * 60 * 1000;
+      await pool.query(
+        `INSERT INTO password_reset_token (token_hash, user_id, expires_at, created_at)
+         VALUES ($1, $2, $3, $4)`,
+        [tokenHash, userId, expiresAt, now],
+      );
+      console.warn("");
+      console.warn("\x1b[33m═══════════════════════════════════════════════════════════════");
+      console.warn(`  SECOND SUPER ADMIN PASSWORD SETUP`);
+      console.warn(`  Email: ${SECOND_EMAIL}`);
+      console.warn(`  Open this URL within 72h to set the password:`);
+      console.warn(`  ${ADMIN_BASE_URL}/set-password?token=${rawToken}`);
+      console.warn("═══════════════════════════════════════════════════════════════\x1b[0m");
+      console.warn("");
+    }
   } else {
     console.log("[FIX] SECOND_EMAIL not set (or same as primary) — skipping second user");
   }

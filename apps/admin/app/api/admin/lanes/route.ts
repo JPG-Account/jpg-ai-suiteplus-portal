@@ -9,7 +9,7 @@ export const GET = withSuperAdmin(async () => {
   const pool = await getPool();
   const { rows } = await pool.query<any>("SELECT * FROM lane ORDER BY sort_order");
   return NextResponse.json({
-    lanes: rows.map((l) => ({
+    lanes: rows.map((l: any) => ({
       id: l.id,
       slug: l.slug,
       name: l.name,

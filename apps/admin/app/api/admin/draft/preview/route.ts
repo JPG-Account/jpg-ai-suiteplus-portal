@@ -6,8 +6,8 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export const GET = withSuperAdmin(async () => {
-  const draftBundle = buildBundleFromDb();
-  const current = getCurrentRevision();
+  const draftBundle = await buildBundleFromDb();
+  const current = await getCurrentRevision();
   return NextResponse.json({
     draftBundle,
     currentRevision: current?.revisionNumber ?? null,

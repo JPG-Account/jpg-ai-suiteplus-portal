@@ -11,7 +11,7 @@ export const GET = withSuperAdmin(async () => {
     "SELECT * FROM capability ORDER BY sort_order",
   );
   return NextResponse.json({
-    capabilities: rows.map((c) => ({
+    capabilities: rows.map((c: any) => ({
       id: c.id,
       slug: c.slug,
       name: c.name,

@@ -122,7 +122,7 @@ export class LocalPasswordAuthProvider implements AuthProvider {
         id: user.id,
         email: user.email,
         displayName: user.display_name,
-        role,
+        role: role as SessionUser["role"],
       },
     };
   }
@@ -160,7 +160,7 @@ export class LocalPasswordAuthProvider implements AuthProvider {
       id: row.user_id,
       email: row.email,
       displayName: row.display_name,
-      role: row.role ?? "viewer",
+      role: (row.role ?? "viewer") as SessionUser["role"],
     };
   }
 

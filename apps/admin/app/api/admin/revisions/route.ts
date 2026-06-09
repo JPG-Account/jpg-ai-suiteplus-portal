@@ -16,7 +16,7 @@ export const GET = withSuperAdmin(async () => {
      LIMIT 100`,
   );
   return NextResponse.json({
-    revisions: rows.map((r) => ({
+    revisions: rows.map((r: any) => ({
       revisionNumber: r.revision_number,
       publishedAt: new Date(Number(r.published_at)).toISOString(),
       publishedBy: { email: r.published_by_email, name: r.published_by_name },

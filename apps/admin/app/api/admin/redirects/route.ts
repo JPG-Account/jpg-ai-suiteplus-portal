@@ -14,7 +14,7 @@ export const GET = withSuperAdmin(async () => {
     "SELECT * FROM redirect ORDER BY from_path",
   );
   return NextResponse.json({
-    redirects: rows.map((r) => ({
+    redirects: rows.map((r: any) => ({
       id: r.id,
       fromPath: r.from_path,
       toPath: r.to_path,

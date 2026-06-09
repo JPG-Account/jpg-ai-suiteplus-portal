@@ -17,7 +17,7 @@ export const GET = withSuperAdmin(async () => {
   );
 
   return NextResponse.json({
-    users: rows.map((r) => ({
+    users: rows.map((r: any) => ({
       id: r.id,
       email: r.email,
       displayName: r.display_name,

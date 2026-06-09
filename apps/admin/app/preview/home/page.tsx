@@ -28,7 +28,7 @@ export default async function PreviewHome({
     "SELECT * FROM page_block WHERE page_key = 'home' ORDER BY position",
   );
   const blocks = blocksRes.rows.map(
-    (b): RenderBlock => ({
+    (b: any): RenderBlock => ({
       id: b.id,
       type: b.block_type,
       label: b.label,
@@ -43,7 +43,7 @@ export default async function PreviewHome({
   const lanesRes = await pool.query<any>(
     "SELECT * FROM lane ORDER BY sort_order",
   );
-  const lanes = lanesRes.rows.map((l) => ({
+  const lanes = lanesRes.rows.map((l: any) => ({
     id: l.slug,
     name: l.name,
     audience: l.audience,
@@ -56,7 +56,7 @@ export default async function PreviewHome({
      LEFT JOIN tile t ON t.capability_id = c.id
      ORDER BY c.sort_order`,
   );
-  const capabilities = capsRes.rows.map((c) => ({
+  const capabilities = capsRes.rows.map((c: any) => ({
     id: c.slug,
     name: c.name,
     shortName: c.short_name,
@@ -82,7 +82,7 @@ export default async function PreviewHome({
         zIndex: 1,
       }}
     >
-      {blocks.map((b) => (
+      {blocks.map((b: RenderBlock) => (
         <BlockRenderer
           key={b.id}
           block={b}

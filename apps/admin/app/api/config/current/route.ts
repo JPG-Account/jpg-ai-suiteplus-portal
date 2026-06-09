@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export async function GET() {
-  const current = getCurrentRevision();
+  const current = await getCurrentRevision();
   if (!current) {
     return NextResponse.json({ error: "no_published_revision" }, { status: 503 });
   }

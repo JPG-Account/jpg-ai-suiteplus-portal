@@ -16,7 +16,7 @@ export const GET = withSuperAdmin(async () => {
      ORDER BY t.sort_order`,
   );
   return NextResponse.json({
-    tiles: rows.map((t) => ({
+    tiles: rows.map((t: any) => ({
       id: t.id,
       capabilityId: t.capability_id,
       capabilitySlug: t.capability_slug,

@@ -11,7 +11,7 @@ export const GET = withSuperAdmin(async () => {
   const pool = await getPool();
   const { rows } = await pool.query<any>("SELECT * FROM snippet ORDER BY key");
   return NextResponse.json({
-    snippets: rows.map((s) => ({
+    snippets: rows.map((s: any) => ({
       id: s.id,
       key: s.key,
       type: s.type,

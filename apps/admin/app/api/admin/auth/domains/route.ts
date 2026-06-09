@@ -13,7 +13,7 @@ export const GET = withSuperAdmin(async () => {
     "SELECT * FROM auth_allowed_domain ORDER BY pattern",
   );
   return NextResponse.json({
-    domains: rows.map((r) => ({
+    domains: rows.map((r: any) => ({
       pattern: r.pattern,
       isGlob: !!r.is_glob,
       addedBy: r.added_by,

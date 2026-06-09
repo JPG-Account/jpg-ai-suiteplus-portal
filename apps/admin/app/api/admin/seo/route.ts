@@ -13,7 +13,7 @@ export const GET = withSuperAdmin(async () => {
     "SELECT * FROM seo_default ORDER BY scope",
   );
   return NextResponse.json({
-    seo: rows.map((r) => ({
+    seo: rows.map((r: any) => ({
       id: r.id,
       scope: r.scope,
       titleTemplate: r.title_template,

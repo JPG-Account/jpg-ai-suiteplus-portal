@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { TopBar, ActionBar } from "../../../../components/TopBar";
 import { Icon } from "../../../../components/Icons";
 import { ToastView, useToast } from "../../../../components/Toast";
+import { csrfHeader } from "../../../../components/CsrfBootstrap";
 
 type ApiRedirect = { id: string; fromPath: string; toPath: string; statusCode: 301 | 302; isEnabled: boolean };
 type ApiSeo = { id: string; scope: string; titleTemplate: string; description: string; canonicalHost: string; ogPayload: Record<string, unknown>; updatedAt: string };
@@ -47,7 +48,7 @@ export default function SeoPage() {
     try {
       const r = await fetch("/api/admin/redirects", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...csrfHeader() },
         body: JSON.stringify({ fromPath: newFrom, toPath: newTo, statusCode: newCode }),
       });
       const j = await r.json();
@@ -66,7 +67,7 @@ export default function SeoPage() {
     try {
       const r = await fetch("/api/admin/redirects", {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...csrfHeader() },
         body: JSON.stringify({ id: rd.id, isEnabled: !rd.isEnabled }),
       });
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
@@ -78,7 +79,7 @@ export default function SeoPage() {
   async function deleteRedirect(rd: ApiRedirect) {
     if (!confirm(`Delete redirect ${rd.fromPath} → ${rd.toPath}?`)) return;
     try {
-      const r = await fetch(`/api/admin/redirects?id=${encodeURIComponent(rd.id)}`, { method: "DELETE" });
+      const r = await fetch(`/api/admin/redirects?id=${encodeURIComponent(rd.id)}`, { method: "DELETE", headers: { ...csrfHeader() } });
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       await reload();
       ok(`Deleted ${rd.fromPath}`);
@@ -91,7 +92,7 @@ export default function SeoPage() {
     try {
       const r = await fetch("/api/admin/seo", {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...csrfHeader() },
         body: JSON.stringify({ scope: "global", ...seoDraft }),
       });
       if (!r.ok) {

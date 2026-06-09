@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { TopBar, ActionBar } from "../../../components/TopBar";
 import { Icon } from "../../../components/Icons";
 import { ToastView, useToast } from "../../../components/Toast";
+import { csrfHeader } from "../../../components/CsrfBootstrap";
 
 type Approval = {
   id: string;
@@ -85,7 +86,7 @@ export default function ApprovalsPage() {
     try {
       const r = await fetch("/api/admin/approvals", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...csrfHeader() },
         body: JSON.stringify({ kind: newKind, title: t, justification: j }),
       });
       const data = await r.json();
@@ -113,7 +114,7 @@ export default function ApprovalsPage() {
     try {
       const r = await fetch(`/api/admin/approvals/${selected.id}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...csrfHeader() },
         body: JSON.stringify({ decision: decideOpen, notes: decideNotes.trim() }),
       });
       const data = await r.json();

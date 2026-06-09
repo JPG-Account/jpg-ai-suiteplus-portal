@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { TopBar, ActionBar } from "../../../../components/TopBar";
 import { Icon } from "../../../../components/Icons";
 import { ToastView, useToast } from "../../../../components/Toast";
+import { csrfHeader } from "../../../../components/CsrfBootstrap";
 
 type Snippet = {
   id: string;
@@ -59,7 +60,7 @@ export default function SnippetsPage() {
     try {
       const r = await fetch("/api/admin/snippets", {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...csrfHeader() },
         body: JSON.stringify({ id: selected.id, ...draft }),
       });
       if (!r.ok) throw new Error(`HTTP ${r.status}`);

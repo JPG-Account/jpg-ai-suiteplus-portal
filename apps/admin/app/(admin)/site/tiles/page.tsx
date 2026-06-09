@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { TopBar, ActionBar } from "../../../../components/TopBar";
 import { Icon } from "../../../../components/Icons";
 import { ToastView, useToast } from "../../../../components/Toast";
+import { csrfHeader } from "../../../../components/CsrfBootstrap";
 
 type ApiTile = {
   id: string;
@@ -81,7 +82,7 @@ export default function TilesPage() {
 
       const r = await fetch("/api/admin/tiles", {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...csrfHeader() },
         body: JSON.stringify(body),
       });
       if (!r.ok) {
@@ -106,7 +107,7 @@ export default function TilesPage() {
     try {
       const r = await fetch("/api/admin/publish", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...csrfHeader() },
         body: JSON.stringify({ notes: `Tile editor publish · ${dirtyIds.size} tile change(s)` }),
       });
       if (!r.ok) throw new Error(`HTTP ${r.status}`);

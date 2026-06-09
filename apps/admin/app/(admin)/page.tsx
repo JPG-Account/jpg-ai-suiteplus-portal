@@ -8,6 +8,7 @@ import { TopBar, ActionBar } from "../../components/TopBar";
 import { Icon } from "../../components/Icons";
 import { ToastView, useToast } from "../../components/Toast";
 import { RollbackModal } from "../../components/RollbackModal";
+import { csrfHeader } from "../../components/CsrfBootstrap";
 
 type Revision = {
   revisionNumber: number;
@@ -76,7 +77,7 @@ export default function Dashboard() {
     try {
       const r = await fetch("/api/admin/rollback", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...csrfHeader() },
         body: JSON.stringify({ revisionNumber: targetRevision, notes }),
       });
       const j = await r.json();

@@ -86,8 +86,10 @@ export const POST = withSuperAdmin(async (req, ctx) => {
     after: { email: lowered, role, expiresAt: new Date(expiresAt).toISOString() },
   });
 
-  const url = new URL(req.url);
-  const setPasswordUrl = `${url.origin}/set-password?token=${encodeURIComponent(rawToken)}`;
+  // Prefer ADMIN_BASE_URL over req.url's origin — behind a load balancer
+  // req.url shows the internal container address (e.g. 0.0.0.0:8080).
+  const origin = (process.env.ADMIN_BASE_URL ?? new URL(req.url).origin).replace(/\/$/, "");
+  const setPasswordUrl = `${origin}/set-password?token=${encodeURIComponent(rawToken)}`;
 
   return NextResponse.json(
     {

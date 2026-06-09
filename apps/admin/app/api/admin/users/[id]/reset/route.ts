@@ -27,8 +27,12 @@ export const POST = withSuperAdmin(async (req, ctx) => {
     after: { email: user.email, expiresAt: new Date(expiresAt).toISOString() },
   });
 
-  const url = new URL(req.url);
-  const setPasswordUrl = `${url.origin}/set-password?token=${encodeURIComponent(rawToken)}`;
+  // Prefer ADMIN_BASE_URL (the public CF route) over req.url, which behind a
+  // load balancer reports the internal container address (e.g. 0.0.0.0:8080).
+  // Fall back to req.url's origin only in local-dev runs where ADMIN_BASE_URL
+  // isn't set.
+  const origin = (process.env.ADMIN_BASE_URL ?? new URL(req.url).origin).replace(/\/$/, "");
+  const setPasswordUrl = `${origin}/set-password?token=${encodeURIComponent(rawToken)}`;
   return NextResponse.json({
     ok: true,
     setPasswordUrl,

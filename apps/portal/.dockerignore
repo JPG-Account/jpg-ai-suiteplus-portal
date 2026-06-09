@@ -1,0 +1,34 @@
+# Exclude from Docker build context — keep the image small & deterministic.
+**/.git
+**/.gitignore
+**/node_modules
+**/.next
+**/.turbo
+**/.DS_Store
+**/.env
+**/.env.*
+**/dist
+**/out
+**/coverage
+**/.vscode
+**/.idea
+**/*.log
+
+# Project-level docs / sources that don't belong in the runtime image
+README.md
+docs
+source
+infra/github-actions
+
+# Workflows and CI metadata
+.github
+
+# The portal builds itself — nothing from sibling apps should leak in.
+apps/ria
+apps/client-university
+apps/rapid-assessment
+apps/roi-calculator
+apps/trade-promotion-optimizer
+apps/cx-life-sciences
+apps/cx-insurance
+apps/flexiom

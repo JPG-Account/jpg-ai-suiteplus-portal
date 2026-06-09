@@ -1,0 +1,133 @@
+# UST AI Suite+ for SAP — Solution Registry
+# Source of truth for the capability showcase.
+# Governed by SKILL_v2.md. Do not add new solutions without intake approval.
+
+solutions:
+  - id: ria
+    name: RIA
+    shortName: Rapid Impact Analyzer
+    type: AI-assisted analyzer
+    status: live
+    primaryLane: AI for Developers
+    secondaryLanes: [AI for Architects, AI for Consultants, AI for Ops, AI for Governance]
+    route: /capabilities/ria
+    owner: TBD
+    description: See what a proposed SAP change may touch before it moves forward.
+    features:
+      - Maps likely impact across modules, objects, and tests
+      - Highlights coverage gaps and potential risk areas
+      - Useful for delivery, quality, and governance conversations
+    tags: [SAP change, impact, custom code, testing, transport, quality, release risk]
+    enabled: true
+
+  - id: client-university
+    name: Client University
+    type: Enablement solution
+    status: demo
+    primaryLane: AI for Ops
+    secondaryLanes: [AI for Business, AI for Consultants]
+    route: /capabilities/client-university
+    owner: TBD
+    description: Give support teams and business users a faster path to learning, adoption, and self-service guidance.
+    features:
+      - Turns approved knowledge into structured learning journeys
+      - Supports AMS, business enablement, and user adoption
+      - Reduces repeat questions and supports guided learning
+    tags: [enablement, learning, support, AMS, knowledge, training, adoption]
+    enabled: true
+
+  - id: rapid-assessment
+    name: Rapid Assessment
+    type: Assessment accelerator
+    status: demo
+    primaryLane: AI for Consultants
+    secondaryLanes: [AI for Executives, AI for Architects, AI for Governance]
+    route: /capabilities/rapid-assessment
+    owner: TBD
+    description: Structure discovery and readiness work into clearer, faster client-facing outputs.
+    features:
+      - Supports current-state review and readiness conversations
+      - Helps teams frame priorities, gaps, and next steps
+      - Useful for workshops, proposals, and roadmaps
+    tags: [assessment, readiness, workshop, proposal, roadmap]
+    enabled: true
+
+  - id: roi-calculator
+    name: ROI Calculator
+    type: Calculator
+    status: demo
+    primaryLane: AI for Finance
+    secondaryLanes: [AI for Executives, AI for Consultants]
+    route: /capabilities/roi-calculator
+    owner: TBD
+    description: Build credible value cases and compare scenarios with more confidence.
+    features:
+      - Supports business case and benefit discussion
+      - Helps align value story to executive priorities
+      - Useful for investment decisions and proposal shaping
+    tags: [ROI, business case, value, benefits, cost savings, scenario, finance]
+    enabled: true
+
+  - id: trade-promotion-optimizer
+    name: Trade Promotion Optimizer
+    type: Industry accelerator
+    status: demo
+    primaryLane: AI for Industry / Domain
+    secondaryLanes: [AI for Business, AI for Finance]
+    route: /capabilities/trade-promotion-optimizer
+    owner: TBD
+    description: Support smarter trade promotion planning and better commercial decision making.
+    features:
+      - Helps frame promotion options and likely outcomes
+      - Supports finance and business alignment
+      - Useful for CPG and revenue growth discussions
+    tags: [trade promotion, CPG, planning, optimization, margin]
+    enabled: true
+
+  - id: cx-life-sciences
+    name: CX for Life Sciences
+    type: Industry solution
+    status: available
+    primaryLane: AI for Industry / Domain
+    secondaryLanes: [AI for Business, AI for Executives]
+    route: /capabilities/cx-life-sciences
+    owner: TBD
+    description: Show how customer experience capabilities can be shaped for Life Sciences needs.
+    features:
+      - Industry-centered story for engagement and service
+      - Useful for customer-facing transformation discussions
+      - Brings domain context into SAP CX conversations
+    tags: [customer experience, Life Sciences, engagement, service, sales]
+    enabled: true
+
+  - id: cx-insurance
+    name: CX for Insurance
+    type: Industry solution
+    status: available
+    primaryLane: AI for Industry / Domain
+    secondaryLanes: [AI for Business, AI for Executives]
+    route: /capabilities/cx-insurance
+    owner: TBD
+    description: Show how customer experience patterns can be shaped for Insurance journeys and service models.
+    features:
+      - Useful for policyholder, service, and engagement stories
+      - Supports front-office transformation discussions
+      - Connects SAP CX capability to industry context
+    tags: [customer experience, Insurance, policy, claims, service, sales]
+    enabled: true
+
+  - id: flexiom
+    name: FlexIOM
+    type: SAP solution accelerator
+    status: available
+    primaryLane: AI for Business
+    secondaryLanes: [AI for Industry / Domain, AI for Executives]
+    route: /capabilities/flexiom
+    owner: TBD
+    description: Support intelligent order management and availability-to-promise scenarios for better fulfillment decisions.
+    features:
+      - Strong fit for supply, order, and customer commitment discussions
+      - Useful for business and SAP stakeholders alike
+      - Shows practical value beyond pure AI narratives
+    tags: [intelligent order management, aATP, order promising, supply chain, fulfillment]
+    enabled: true

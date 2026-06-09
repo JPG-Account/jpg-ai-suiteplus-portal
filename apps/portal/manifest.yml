@@ -1,0 +1,27 @@
+---
+# SAP BTP Cloud Foundry deploy descriptor — UST AI Suite+ for SAP · Portal
+# Global account: UST Global Inc
+# Subaccount:     BUILD_AI_SUBACCOUNT
+# CF org:         org-build-build-ai-subaccount
+# CF space:       code_migration_space
+# API:            https://api.cf.us10-001.hana.ondemand.com
+applications:
+  - name: ust-ai-suite-plus-sap-portal
+    instances: 1
+    memory: 512M
+    disk_quota: 1G
+    stack: cflinuxfs4
+    docker:
+      # Image is set at deploy time by the GitHub Actions workflow.
+      # Local cf push: override with `cf push --docker-image <tag>`.
+      image: ghcr.io/ust-account/ust-ai-suite-plus-sap-portal:latest
+    routes:
+      - route: ust-ai-suite-plus-sap.cfapps.us10-001.hana.ondemand.com
+    health-check-type: http
+    health-check-http-endpoint: /api/health
+    health-check-invocation-timeout: 10
+    timeout: 120
+    env:
+      NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: "1"
+      HOSTNAME: "0.0.0.0"

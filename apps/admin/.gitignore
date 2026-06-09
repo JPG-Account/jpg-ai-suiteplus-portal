@@ -1,0 +1,14 @@
+node_modules
+.next
+.turbo
+.DS_Store
+*.log
+.env
+.env.local
+.env.*.local
+
+# Local SQLite — never commit
+data/*.sqlite
+data/*.sqlite-journal
+data/*.sqlite-wal
+data/*.sqlite-shm

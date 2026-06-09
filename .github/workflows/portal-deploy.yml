@@ -1,0 +1,137 @@
+# UST AI Suite+ for SAP — Portal · CI/CD to SAP BTP Cloud Foundry
+# Pattern: build multi-stage Docker image in CI → push to GitHub Container
+# Registry → cf push --docker-image. Proven on RIA 2026-05-27.
+#
+# Required GitHub Actions secrets (UST repo settings → Secrets and variables → Actions):
+#   CF_API        e.g. https://api.cf.us10-001.hana.ondemand.com
+#   CF_USERNAME   service-account email used by CI
+#   CF_PASSWORD   service-account password
+#   CF_ORG        UST Global Inc
+#   CF_SPACE      code_migration_space
+#   GHCR_PULL_PAT optional · classic PAT with read:packages — only if the GHCR
+#                 package is private and CF must authenticate to pull it.
+#
+# GITHUB_TOKEN (auto-provided) is used to push to ghcr.io; no extra secret needed.
+
+name: portal-deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/portal/**"
+      - "config/**"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "package.json"
+      - ".github/workflows/portal-deploy.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: portal-deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/ust-ai-suite-plus-sap-portal
+
+jobs:
+  build-image:
+    name: Build & push image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image-tag: ${{ steps.meta.outputs.version }}
+      image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build.outputs.digest }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract image metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,prefix=sha-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/portal/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          provenance: false
+
+  cf-push:
+    name: cf push to BTP CF
+    needs: build-image
+    runs-on: ubuntu-latest
+    environment: code_migration_space
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install cf CLI v8
+        run: |
+          curl -fsSL "https://packages.cloudfoundry.org/stable?release=linux64-binary&version=v8&source=github" -o cf8.tgz
+          mkdir -p "$HOME/.local/bin"
+          tar -xzf cf8.tgz -C "$HOME/.local/bin" cf8
+          mv "$HOME/.local/bin/cf8" "$HOME/.local/bin/cf"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: cf login
+        run: |
+          cf api "$CF_API"
+          cf auth "$CF_USERNAME" "$CF_PASSWORD"
+          cf target -o "$CF_ORG" -s "$CF_SPACE"
+        env:
+          CF_API: ${{ secrets.CF_API }}
+          CF_USERNAME: ${{ secrets.CF_USERNAME }}
+          CF_PASSWORD: ${{ secrets.CF_PASSWORD }}
+          CF_ORG: ${{ secrets.CF_ORG }}
+          CF_SPACE: ${{ secrets.CF_SPACE }}
+
+      - name: cf push
+        env:
+          CF_DOCKER_PASSWORD: ${{ secrets.GHCR_PULL_PAT }}
+          IMAGE_REF: ${{ needs.build-image.outputs.image-ref }}
+        run: |
+          set -euo pipefail
+          ARGS=(push -f apps/portal/manifest.yml --docker-image "$IMAGE_REF" --strategy rolling)
+          if [ -n "${CF_DOCKER_PASSWORD:-}" ]; then
+            ARGS+=(--docker-username "${{ github.repository_owner }}")
+          fi
+          cf "${ARGS[@]}"
+
+      - name: Smoke test /api/health
+        run: |
+          ROUTE=$(grep -E "^\s+- route:" apps/portal/manifest.yml | head -1 | awk '{print $3}')
+          for i in 1 2 3 4 5 6 7 8 9 10; do
+            if curl -fsS "https://${ROUTE}/api/health" >/dev/null; then
+              echo "Portal healthy at https://${ROUTE}/api/health"
+              exit 0
+            fi
+            echo "Attempt $i: not healthy yet, retrying in 6s..."
+            sleep 6
+          done
+          echo "Portal failed to become healthy."
+          exit 1

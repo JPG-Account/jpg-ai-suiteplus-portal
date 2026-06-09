@@ -1,0 +1,1507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>UST AI Suite+ for SAP · Admin · V0.6 Mock</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --ust-dark:#006E74;--ust-mid:#0097AC;--ust-soft:#8DE0E7;--ust-deep:#0B3B42;--ust-ink:#0E1F25;--ust-slate:#44505B;
+  --ust-bg-1:#EAF6F8;--ust-bg-2:#DDEFF2;
+  --grad-1:linear-gradient(135deg,#006E74 0%,#00A7B5 42%,#8DE0E7 100%);
+  --grad-2:linear-gradient(135deg,#083A40 0%,#0D6E77 38%,#53D1DD 100%);
+  --grad-page:radial-gradient(1200px 600px at 80% -10%, rgba(0,167,181,.22), transparent 60%),radial-gradient(900px 500px at -10% 30%, rgba(0,110,116,.16), transparent 55%),radial-gradient(800px 600px at 90% 70%, rgba(141,224,231,.22), transparent 55%),linear-gradient(180deg,#E8F4F6 0%,#DDEFF2 40%,#E9F4F6 100%);
+  --shadow:0 24px 60px rgba(8,46,52,.14);--shadow-card:0 10px 24px rgba(8,46,52,.08), 0 2px 6px rgba(8,46,52,.05);--shadow-soft:0 14px 32px rgba(8,46,52,.10);
+  --radius-card:18px;--rail-width:248px;--topbar-h:56px;
+  --font:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;font-family:var(--font);color:var(--ust-ink);background:var(--grad-page);background-attachment:fixed;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}button{font:inherit;cursor:pointer}
+.mock-meta{max-width:1440px;margin:0 auto;padding:42px 36px 12px}
+.mock-meta .eyebrow{display:inline-flex;align-items:center;gap:10px;padding:8px 14px;border-radius:999px;background:rgba(255,255,255,.85);border:1px solid rgba(0,110,116,.2);color:var(--ust-dark);font-size:12px;font-weight:800;letter-spacing:.10em;text-transform:uppercase}
+.mock-meta .eyebrow:before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ust-mid);box-shadow:0 0 0 4px rgba(0,151,172,.18)}
+.mock-meta h1{font-size:56px;line-height:1;letter-spacing:-.04em;font-weight:800;margin:18px 0 12px;color:var(--ust-deep);max-width:980px}
+.mock-meta p{font-size:18px;color:#34464D;max-width:880px;margin:0 0 18px;line-height:1.55}
+.mock-toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.mock-toc a{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid rgba(13,53,60,.12);background:rgba(255,255,255,.85);border-radius:999px;font-size:13px;color:var(--ust-deep);font-weight:600;transition:all .2s ease}
+.mock-toc a:hover{background:#fff;border-color:rgba(0,151,172,.35);transform:translateY(-1px)}
+.mock-toc a b{color:var(--ust-dark);font-weight:800}
+.mock-toc a.new b:after{content:"NEW";margin-left:6px;font-size:9px;color:#1B6A55;padding:2px 5px;background:#E0F5EB;border-radius:4px;letter-spacing:.05em}
+.screen{max-width:1440px;margin:0 auto 28px;padding:0 36px}
+.screen-frame{position:relative;background:#fff;border:1px solid rgba(13,53,60,.10);border-radius:24px;box-shadow:var(--shadow);overflow:hidden}
+.screen-label{position:sticky;top:0;z-index:5;background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,.85));backdrop-filter:blur(8px);border-bottom:1px solid rgba(13,53,60,.08);padding:14px 22px;display:flex;align-items:center;justify-content:space-between}
+.screen-label .num{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9px;background:var(--grad-1);color:#fff;font-weight:800;font-size:13px;box-shadow:0 4px 10px rgba(0,151,172,.30)}
+.screen-label-title{display:flex;align-items:center;gap:12px}
+.screen-label-title b{font-size:15px;letter-spacing:-.01em;color:var(--ust-deep);font-weight:700}
+.screen-label-title span{color:#55676E;font-size:13px}
+.screen-label .meta{font-size:12px;color:#55676E;letter-spacing:.04em;text-transform:uppercase;font-weight:600}
+.screen-label .new-badge{font-size:10px;color:#1B6A55;background:#E0F5EB;padding:3px 7px;border-radius:5px;font-weight:800;letter-spacing:.05em;margin-left:6px}
+.app{display:grid;grid-template-columns:var(--rail-width) 1fr;min-height:760px;background:var(--ust-bg-1)}
+.rail{background:#fff;border-right:1px solid rgba(13,53,60,.08);display:flex;flex-direction:column}
+.rail-brand{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid rgba(13,53,60,.06);height:var(--topbar-h);flex:0 0 auto}
+.rail-mark{width:32px;height:32px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;align-items:center;justify-items:center;color:var(--ust-ink);font-weight:900;font-size:16px;line-height:1;letter-spacing:-.03em}
+.rail-mark-dot{display:block;width:5px;height:5px;background:var(--ust-ink);justify-self:start;margin:2px 0 0 1px;border-radius:1px}
+.rail-brand-copy b{display:block;font-size:13px;font-weight:700;color:var(--ust-deep);letter-spacing:-.01em;line-height:1.15}
+.rail-brand-copy span{display:block;font-size:11px;color:#5E6973;line-height:1.3}
+.rail-search{padding:14px 14px 6px;position:relative}
+.rail-search input{width:100%;border:1px solid rgba(13,53,60,.10);background:#F4FAFB;border-radius:10px;padding:9px 12px 9px 34px;font:inherit;font-size:13px;color:var(--ust-deep);outline:none}
+.rail-search:before{content:"";position:absolute;left:26px;top:24px;width:14px;height:14px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2354717A' stroke-width='2.2' stroke-linecap='round'><circle cx='11' cy='11' r='7'/><path d='m20 20-3-3'/></svg>")}
+.rail-search kbd{position:absolute;right:22px;top:21px;font:600 10px/1 var(--font);padding:3px 6px;border:1px solid rgba(13,53,60,.14);border-radius:5px;background:#fff;color:#7F8B92}
+.rail-nav{padding:8px 8px 16px;overflow:auto;flex:1 1 auto}
+.rail-section{margin-top:14px}
+.rail-section-title{padding:4px 10px;font-size:11px;text-transform:uppercase;letter-spacing:.10em;color:#7F8B92;font-weight:700}
+.rail-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;color:#3F4F58;font-size:13.5px;font-weight:500;cursor:pointer;transition:background .15s ease,color .15s ease;position:relative;margin:1px 0}
+.rail-item svg{width:16px;height:16px;flex:0 0 auto;color:#7F8B92}
+.rail-item:hover{background:#EFF7F9;color:var(--ust-dark)}
+.rail-item.active{background:linear-gradient(180deg,#E9F8F9,#DBF1F4);color:var(--ust-dark);font-weight:600}
+.rail-item.active svg{color:var(--ust-dark)}
+.rail-item.active:before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:2px;background:var(--ust-dark)}
+.rail-item .count{margin-left:auto;font-size:11px;color:#7F8B92;background:#EEF4F6;padding:2px 8px;border-radius:999px;font-weight:700}
+.rail-sub{padding-left:32px;display:flex;flex-direction:column;gap:1px;margin-top:2px}
+.rail-sub a{font-size:12.5px;color:#516068;padding:6px 10px;border-radius:6px}
+.rail-sub a:hover{background:#F2F8F9;color:var(--ust-dark)}
+.rail-sub a.active{color:var(--ust-dark);font-weight:700;background:#F4FBFC}
+.rail-foot{border-top:1px solid rgba(13,53,60,.06);padding:10px 14px;display:flex;align-items:center;gap:10px}
+.rail-foot .avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#006E74,#53D1DD);color:#fff;display:grid;place-items:center;font-weight:800;font-size:12px;letter-spacing:.02em}
+.rail-foot .id{display:flex;flex-direction:column;line-height:1.2}
+.rail-foot .id b{font-size:12.5px;color:var(--ust-deep);font-weight:700}
+.rail-foot .id span{font-size:11px;color:#7F8B92}
+.rail-foot .role-chip{margin-left:auto;font-size:10px;background:rgba(0,110,116,.10);color:var(--ust-dark);padding:3px 7px;border-radius:999px;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+.work{display:flex;flex-direction:column;min-width:0}
+.topbar{height:var(--topbar-h);background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid rgba(13,53,60,.08);display:flex;align-items:center;justify-content:space-between;padding:0 22px;flex:0 0 auto}
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:13px;color:#52646C}
+.breadcrumb b{color:var(--ust-deep);font-weight:600}
+.breadcrumb svg{width:13px;height:13px;color:#9DA9B0}
+.top-right{display:flex;align-items:center;gap:14px}
+.env-switcher{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(13,53,60,.12);background:#fff;padding:5px 10px 5px 8px;border-radius:8px;font-size:12px;color:var(--ust-deep);font-weight:600;cursor:pointer}
+.env-switcher .env-dot{width:8px;height:8px;border-radius:50%;background:#1C9E6A;box-shadow:0 0 0 3px rgba(28,158,106,.18)}
+.env-switcher.env-stage .env-dot{background:#D8930A;box-shadow:0 0 0 3px rgba(216,147,10,.18)}
+.env-switcher kbd{font:600 10px/1 var(--font);padding:2px 5px;border:1px solid rgba(13,53,60,.14);border-radius:4px;background:#F4FAFB;color:#7F8B92}
+.icon-btn{width:32px;height:32px;display:grid;place-items:center;border-radius:8px;color:#52646C;background:transparent;border:1px solid transparent;cursor:pointer;position:relative}
+.icon-btn:hover{background:#EFF7F9;color:var(--ust-dark)}
+.icon-btn svg{width:18px;height:18px}
+.icon-btn .badge{position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;background:#E0793B;border:2px solid #fff}
+.top-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#006E74,#53D1DD);color:#fff;display:grid;place-items:center;font-weight:800;font-size:11px;letter-spacing:.02em}
+.actionbar{padding:24px 28px 14px;display:flex;align-items:flex-start;justify-content:space-between;gap:18px;background:transparent}
+.actionbar-l h1{margin:0 0 4px;font-size:28px;letter-spacing:-.03em;font-weight:800;color:var(--ust-deep);line-height:1.15}
+.actionbar-l p{margin:0;color:#52646C;font-size:14px;max-width:760px}
+.actionbar-r{display:flex;align-items:center;gap:8px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:9px;font:600 13.5px/1 var(--font);border:1px solid rgba(13,53,60,.12);background:#fff;color:var(--ust-deep);cursor:pointer;transition:all .15s ease}
+.btn:hover{border-color:rgba(0,151,172,.35);transform:translateY(-1px)}
+.btn.primary{background:var(--grad-1);color:#fff;border-color:transparent;box-shadow:0 8px 18px rgba(0,151,172,.30)}
+.btn.primary:hover{box-shadow:0 12px 24px rgba(0,151,172,.40)}
+.btn.ghost{background:transparent;border-color:transparent;color:#52646C}
+.btn.ghost:hover{background:#EFF7F9;border-color:transparent}
+.btn.danger{background:#9A1F2B;color:#fff;border-color:transparent}
+.btn svg{width:14px;height:14px}
+.content{padding:8px 28px 32px;flex:1 1 auto;overflow:auto}
+.card{background:#fff;border:1px solid rgba(13,53,60,.08);border-radius:var(--radius-card);box-shadow:var(--shadow-card);overflow:hidden}
+.card-h{padding:16px 18px 12px;border-bottom:1px solid rgba(13,53,60,.06);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.card-h h3{margin:0;font-size:14px;font-weight:700;color:var(--ust-deep);letter-spacing:-.01em}
+.card-h .meta{font-size:12px;color:#7F8B92;font-weight:600}
+.card-b{padding:14px 18px}
+.dash{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:18px}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.kpi{background:#fff;border:1px solid rgba(13,53,60,.08);border-radius:14px;box-shadow:var(--shadow-card);padding:16px;position:relative;overflow:hidden}
+.kpi:before{content:"";position:absolute;left:0;top:0;right:0;height:2px;background:var(--grad-1)}
+.kpi b{display:block;font-size:26px;font-weight:800;color:var(--ust-deep);letter-spacing:-.02em;line-height:1.05}
+.kpi span.lbl{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.10em;color:#7F8B92;font-weight:700;margin-bottom:8px}
+.kpi .trend{display:inline-flex;align-items:center;gap:4px;margin-top:6px;font-size:12px;font-weight:700}
+.kpi .trend.up{color:#1B6A55}
+.kpi .trend.flat{color:#7F8B92}
+.spark{margin-top:10px;height:32px}
+.audit-row{display:grid;grid-template-columns:84px 28px 1fr auto;gap:10px;align-items:center;padding:10px 0;border-top:1px solid rgba(13,53,60,.06);font-size:13px;color:#3F4F58}
+.audit-row:first-child{border-top:0}
+.audit-row .ts{font-variant-numeric:tabular-nums;color:#7F8B92;font-size:12px}
+.audit-row .who{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#0097AC,#53D1DD);color:#fff;display:grid;place-items:center;font-weight:800;font-size:10px}
+.audit-row .act b{color:var(--ust-deep);font-weight:700}
+.audit-row .act .verb{color:var(--ust-dark);font-weight:700}
+.audit-row .tag{font-size:11px;background:#F0F6F8;color:#3F4F58;padding:3px 8px;border-radius:999px;font-weight:600}
+.approval-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid rgba(13,53,60,.06)}
+.approval-row:first-child{border-top:0}
+.approval-row .badge{font-size:10px;background:rgba(216,147,10,.14);color:#8E520E;padding:3px 8px;border-radius:999px;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+.approval-row .desc{flex:1 1 auto;font-size:13px}
+.approval-row .desc b{color:var(--ust-deep);font-weight:700}
+.approval-row .desc span{color:#7F8B92}
+.approval-row .btn{padding:5px 11px;font-size:12px;border-radius:7px}
+.table-wrap{background:#fff;border:1px solid rgba(13,53,60,.08);border-radius:var(--radius-card);box-shadow:var(--shadow-card);overflow:hidden;margin:0 28px}
+.table-tools{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 18px;border-bottom:1px solid rgba(13,53,60,.06);flex-wrap:wrap}
+.filters{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.filters .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;border:1px solid rgba(13,53,60,.10);background:#fff;font-size:12px;color:#3F4F58;font-weight:600}
+.filters .chip.active{background:linear-gradient(135deg,#E9F8F9,#DBF1F4);border-color:rgba(0,151,172,.30);color:var(--ust-dark)}
+.search-mini{position:relative;display:flex;align-items:center}
+.search-mini input{font:inherit;font-size:13px;background:#F4FAFB;border:1px solid rgba(13,53,60,.10);border-radius:8px;padding:7px 10px 7px 30px;outline:none;width:240px;color:var(--ust-deep)}
+.search-mini:before{content:"";position:absolute;left:9px;top:9px;width:14px;height:14px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2354717A' stroke-width='2.2' stroke-linecap='round'><circle cx='11' cy='11' r='7'/><path d='m20 20-3-3'/></svg>")}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl thead th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#7F8B92;font-weight:700;padding:11px 18px;border-bottom:1px solid rgba(13,53,60,.10);background:#F8FBFC}
+.tbl tbody td{padding:12px 18px;border-bottom:1px solid rgba(13,53,60,.06);color:#3F4F58;vertical-align:middle}
+.tbl tbody tr:hover{background:#F4FAFB}
+.tbl tbody tr.selected{background:#EBF7F8;outline:1px solid rgba(0,151,172,.30);outline-offset:-1px}
+.tbl .tile-ico{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#E9F8F9,#D5F0F3);display:inline-grid;place-items:center;color:var(--ust-dark);border:1px solid rgba(0,151,172,.18);margin-right:10px;vertical-align:middle}
+.tbl .name b{color:var(--ust-deep);font-weight:700;display:block}
+.tbl .name span{color:#7F8B92;font-size:12px}
+.tbl .lane-chip{display:inline-block;background:#F1FAFB;border:1px solid #C9E8EC;color:#1E4D54;font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;margin-right:4px}
+.tbl .route code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;background:#F4FAFB;border:1px solid rgba(13,53,60,.08);padding:3px 8px;border-radius:6px;color:#1F3940}
+.tbl .vis{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#3F4F58;font-weight:600}
+.status-pill{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;padding:4px 10px;border-radius:999px;text-transform:uppercase;letter-spacing:.06em}
+.status-pill:before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.st-live{background:#E0F5EB;color:#1B6A55}
+.st-demo{background:#E3F0FE;color:#175AA8}
+.st-avail{background:#FFF1DD;color:#8E520E}
+.st-danger{background:#FFE0E0;color:#9A1F2B}
+.tbl .last{color:#7F8B92;font-size:12px;font-variant-numeric:tabular-nums}
+.tbl .row-actions{display:inline-flex;gap:4px}
+.tbl .row-actions button{background:transparent;border:0;width:26px;height:26px;border-radius:6px;display:grid;place-items:center;color:#7F8B92}
+.tbl .row-actions button:hover{background:#EFF7F9;color:var(--ust-dark)}
+.tbl .row-actions svg{width:14px;height:14px}
+.drawer-stage{position:relative;margin:0 28px 24px}
+.drawer-stage:after{content:"";position:absolute;inset:0;background:rgba(11,59,66,.06);border-radius:var(--radius-card);pointer-events:none}
+.drawer{position:absolute;top:0;right:0;width:520px;background:#fff;border:1px solid rgba(13,53,60,.10);border-radius:var(--radius-card);box-shadow:0 30px 60px rgba(7,25,30,.22);overflow:hidden;z-index:5}
+.drawer-h{padding:18px 20px 12px;border-bottom:1px solid rgba(13,53,60,.06);display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.drawer-h .title b{display:block;font-size:18px;color:var(--ust-deep);letter-spacing:-.02em;font-weight:800}
+.drawer-h .title span{display:block;font-size:12px;color:#7F8B92;margin-top:2px}
+.drawer-h .close{width:30px;height:30px;border-radius:8px;background:#F4FAFB;border:1px solid rgba(13,53,60,.08);display:grid;place-items:center;color:#52646C;cursor:pointer}
+.drawer-b{padding:18px 20px;display:flex;flex-direction:column;gap:18px}
+.drawer-section{display:flex;flex-direction:column;gap:10px}
+.drawer-section .sec-title{font-size:11px;text-transform:uppercase;letter-spacing:.10em;color:#7F8B92;font-weight:700}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:11px;color:#7F8B92;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.field input,.field select,.field textarea{font:inherit;font-size:13px;color:var(--ust-deep);background:#F8FBFC;border:1px solid rgba(13,53,60,.10);border-radius:8px;padding:8px 10px;outline:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:rgba(0,151,172,.45);background:#fff;box-shadow:0 0 0 3px rgba(0,151,172,.10)}
+.field textarea{resize:none;min-height:60px}
+.field .token-row{display:flex;gap:6px;flex-wrap:wrap}
+.field .token-row .tok{width:22px;height:22px;border-radius:6px;border:1px solid rgba(13,53,60,.10);position:relative;cursor:pointer}
+.field .token-row .tok.active{box-shadow:0 0 0 2px var(--ust-dark)}
+.field .row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.toggle{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--ust-deep);font-weight:600}
+.toggle .sw{width:30px;height:18px;background:#D6E4E7;border-radius:999px;position:relative;transition:background .2s ease}
+.toggle .sw:after{content:"";position:absolute;left:2px;top:2px;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(8,46,52,.20);transition:left .2s ease}
+.toggle input{display:none}
+.toggle input:checked + .sw{background:var(--ust-dark)}
+.toggle input:checked + .sw:after{left:14px}
+.role-chip{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:999px}
+.role-chip.r-suite{background:rgba(0,110,116,.12);color:var(--ust-dark)}
+.role-chip.r-content{background:#E3F0FE;color:#175AA8}
+.role-chip.r-approve{background:#FBE9F7;color:#7E2174}
+.role-chip.r-cap{background:#F0EAFF;color:#4B2C9A}
+.role-chip.r-audit{background:#EEF1F4;color:#3F4F58}
+.role-chip.r-super{background:#FFE0E0;color:#9A1F2B}
+.role-chip.r-viewer{background:#F4FAFB;color:#52646C;border:1px solid rgba(13,53,60,.10)}
+.avatar-sm{width:28px;height:28px;border-radius:50%;color:#fff;display:inline-grid;place-items:center;font-weight:800;font-size:11px;margin-right:10px;vertical-align:middle}
+.a1{background:linear-gradient(135deg,#006E74,#53D1DD)}
+.a2{background:linear-gradient(135deg,#9A1F2B,#E0793B)}
+.a3{background:linear-gradient(135deg,#175AA8,#53A4DD)}
+.a4{background:linear-gradient(135deg,#4B2C9A,#A38AE4)}
+.a5{background:linear-gradient(135deg,#1B6A55,#7AD6B1)}
+.a6{background:linear-gradient(135deg,#7E2174,#E4A3D2)}
+.a7{background:linear-gradient(135deg,#3F4F58,#9DA9B0)}
+.checkbox{width:14px;height:14px;border:1.5px solid rgba(13,53,60,.20);border-radius:4px;display:inline-block;vertical-align:middle}
+.checkbox.checked{background:var(--ust-dark);border-color:var(--ust-dark);position:relative}
+.checkbox.checked:after{content:"✓";position:absolute;color:#fff;font-size:10px;font-weight:900;top:-3px;left:1px}
+.bulk-action-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;background:linear-gradient(180deg,#E9F8F9,#DBF1F4);border-bottom:1px solid rgba(0,151,172,.20)}
+.bulk-action-bar .count{font-size:12px;color:var(--ust-dark);font-weight:700}
+.bulk-action-bar .actions{display:flex;gap:6px}
+
+/* ── Site Composer ── */
+.composer{display:grid;grid-template-columns:300px 1fr 320px;gap:16px;padding:0 28px 28px}
+.block-list{background:#fff;border:1px solid rgba(13,53,60,.08);border-radius:14px;box-shadow:var(--shadow-card);overflow:hidden;display:flex;flex-direction:column}
+.bl-h{padding:14px 16px;border-bottom:1px solid rgba(13,53,60,.06);display:flex;align-items:center;justify-content:space-between}
+.bl-h b{font-size:13px;color:var(--ust-deep);font-weight:700;text-transform:uppercase;letter-spacing:.10em}
+.bl-h .count{font-size:11px;color:#7F8B92;font-weight:600;background:#F0F6F8;padding:2px 8px;border-radius:999px}
+.bl-items{padding:8px;display:flex;flex-direction:column;gap:6px;flex:1 1 auto;overflow:auto}
+.bl-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid rgba(13,53,60,.08);border-radius:10px;background:#FBFDFD;cursor:pointer;transition:all .15s ease;position:relative}
+.bl-item:hover{border-color:rgba(0,151,172,.30);background:#F4FAFB}
+.bl-item.selected{border-color:var(--ust-dark);background:linear-gradient(180deg,#F0FBFC,#E6F6F8);box-shadow:inset 0 0 0 1px var(--ust-dark)}
+.bl-item.selected:before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:2px;background:var(--ust-dark)}
+.bl-item .ord{font:600 11px/1 var(--font);color:#7F8B92;font-variant-numeric:tabular-nums;background:#fff;border:1px solid rgba(13,53,60,.10);width:22px;height:22px;border-radius:5px;display:grid;place-items:center;flex:0 0 auto}
+.bl-item .lbl{flex:1 1 auto;min-width:0}
+.bl-item .lbl b{display:block;font-size:13px;color:var(--ust-deep);font-weight:700;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bl-item .lbl span{display:block;font-size:11px;color:#7F8B92;line-height:1.3}
+.bl-item .move{display:flex;flex-direction:column;gap:1px;opacity:.6}
+.bl-item:hover .move,.bl-item.selected .move{opacity:1}
+.bl-item .move button{width:18px;height:14px;border:0;background:transparent;color:#7F8B92;display:grid;place-items:center;border-radius:3px;cursor:pointer}
+.bl-item .move button:hover{background:#fff;color:var(--ust-dark)}
+.bl-item .move svg{width:10px;height:10px}
+.bl-item .badge-mini{font-size:9px;font-weight:800;padding:2px 5px;border-radius:4px;text-transform:uppercase;letter-spacing:.05em;flex:0 0 auto}
+.bl-item .b-snip{background:#F0EAFF;color:#4B2C9A}
+.bl-item .b-sched{background:#FFF1DD;color:#8E520E}
+.bl-item .b-vis{background:#E3F0FE;color:#175AA8}
+.bl-add{padding:10px;border-top:1px solid rgba(13,53,60,.06)}
+.bl-add button{width:100%;padding:10px;border:1.5px dashed rgba(0,151,172,.40);background:#F4FAFB;color:var(--ust-dark);border-radius:10px;font:600 12.5px/1 var(--font);display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer}
+.bl-add button:hover{background:#EAF6F8}
+.preview-pane{background:#fff;border:1px solid rgba(13,53,60,.08);border-radius:14px;box-shadow:var(--shadow-card);overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.pp-top{padding:10px 14px;border-bottom:1px solid rgba(13,53,60,.06);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.pp-top-l{display:flex;align-items:center;gap:10px}
+.pp-readonly{font-size:10.5px;color:#7E2174;background:#FBE9F7;padding:3px 9px;border-radius:999px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;display:inline-flex;align-items:center;gap:5px}
+.pp-readonly:before{content:"";width:5px;height:5px;border-radius:50%;background:#7E2174}
+.pp-device{display:inline-flex;background:#F4FAFB;border-radius:8px;padding:3px;gap:2px}
+.pp-device button{border:0;background:transparent;padding:5px 9px;border-radius:6px;font-size:12px;color:#52646C;font-weight:600;cursor:pointer}
+.pp-device button.active{background:#fff;box-shadow:0 1px 3px rgba(8,46,52,.10);color:var(--ust-deep)}
+.pp-stage{flex:1 1 auto;background:linear-gradient(180deg,#F4FAFB 0%,#EAF6F8 100%);padding:20px;min-height:540px;position:relative;overflow:auto}
+.pp-stage:before{content:"";position:absolute;inset:0;background-image:radial-gradient(circle at 1px 1px, rgba(13,53,60,.06) 1px, transparent 0);background-size:18px 18px;pointer-events:none;opacity:.5}
+.pp-frame{background:#fff;border:1px solid rgba(13,53,60,.10);border-radius:12px;box-shadow:var(--shadow-card);overflow:hidden;position:relative;z-index:1}
+.pp-url{padding:8px 14px;border-bottom:1px solid rgba(13,53,60,.06);font-size:11px;color:#7F8B92;display:flex;align-items:center;justify-content:space-between}
+.pp-url b{color:var(--ust-deep);font-weight:700}
+.pp-url code{font-family:ui-monospace,monospace;font-size:10.5px;background:#F4FAFB;padding:3px 8px;border-radius:999px}
+.pp-block{position:relative;border-bottom:1px dashed rgba(13,53,60,.06)}
+.pp-block.sel{outline:2px solid var(--ust-mid);outline-offset:-2px;background:#F4FBFC}
+.pp-block .lab{position:absolute;top:-12px;left:14px;font-size:9px;text-transform:uppercase;letter-spacing:.10em;font-weight:800;color:#fff;background:var(--ust-mid);padding:3px 8px;border-radius:5px;z-index:2}
+.pp-hero{padding:26px 22px;background:linear-gradient(135deg,#FFFFFF 0%,#F3FBFC 55%,#E0F5F8 100%);text-align:center}
+.pp-hero .eb{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.85);border:1px solid rgba(0,110,116,.18);color:var(--ust-dark);font-size:9px;font-weight:800;letter-spacing:.10em;text-transform:uppercase}
+.pp-hero h2{margin:10px 0 6px;font-size:30px;line-height:1;letter-spacing:-.03em;color:var(--ust-deep);font-weight:800}
+.pp-hero p{margin:0 auto;font-size:11px;color:#52646C;max-width:300px;line-height:1.4}
+.pp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:14px 18px}
+.pp-tile{background:#fff;border:1px solid rgba(13,53,60,.08);border-radius:8px;padding:10px;font-size:10px}
+.pp-tile b{display:block;color:var(--ust-deep);font-weight:700;font-size:11px;margin-bottom:3px}
+.pp-tile span{color:#7F8B92;font-size:9.5px}
+.pp-tile .bd{display:inline-block;font-size:8px;font-weight:800;color:#1B6A55;background:#E0F5EB;padding:2px 6px;border-radius:999px;margin-top:5px;text-transform:uppercase}
+.pp-cta{margin:14px 18px;background:linear-gradient(135deg,#083A40 0%,#0D6E77 38%,#53D1DD 100%);color:#fff;border-radius:10px;padding:14px 16px;font-size:11px;line-height:1.4}
+.pp-cta b{display:block;font-size:14px;letter-spacing:-.02em;margin-bottom:3px}
+.pp-snip{margin:14px 18px;padding:12px 14px;background:#F0EAFF;border:1px solid #C9B7F0;border-radius:10px;font-size:11.5px;color:#4B2C9A;display:flex;align-items:center;gap:8px}
+.pp-snip svg{width:14px;height:14px;flex:0 0 auto}
+.props{background:#fff;border:1px solid rgba(13,53,60,.08);border-radius:14px;box-shadow:var(--shadow-card);overflow:hidden;display:flex;flex-direction:column}
+.props-h{padding:14px 16px;border-bottom:1px solid rgba(13,53,60,.06);display:flex;align-items:center;justify-content:space-between}
+.props-h b{font-size:13px;color:var(--ust-deep);font-weight:700;letter-spacing:-.01em}
+.props-h .typ{font-size:10px;color:#7E2174;background:#FBE9F7;padding:2px 7px;border-radius:5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+.props-tabs{display:flex;border-bottom:1px solid rgba(13,53,60,.06);padding:0 16px;gap:0}
+.props-tabs button{border:0;background:transparent;padding:10px 12px;font:600 12px/1 var(--font);color:#7F8B92;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.props-tabs button.active{color:var(--ust-dark);border-bottom-color:var(--ust-dark)}
+.props-tabs button:hover{color:var(--ust-deep)}
+.props-b{padding:14px 16px;display:flex;flex-direction:column;gap:14px;overflow:auto;flex:1 1 auto}
+.help-line{font-size:10.5px;color:#7F8B92;line-height:1.4}
+.composer-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 28px;background:linear-gradient(180deg,#FFF9EC,#FFF4DA);border-bottom:1px solid #ECD8A6}
+.composer-bar-l{display:flex;align-items:center;gap:10px;font-size:12.5px;color:#8E520E;font-weight:600}
+.composer-bar-l b{color:#5E3700;font-weight:800}
+.draft-chip{font-size:11px;color:#8E520E;background:#FFF1DD;padding:3px 9px;border-radius:999px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;border:1px solid #ECD8A6}
+.saved-pill{font-size:11px;color:#1B6A55;display:inline-flex;align-items:center;gap:6px;background:#E0F5EB;padding:4px 10px;border-radius:999px;font-weight:700}
+.saved-pill:before{content:"";width:5px;height:5px;border-radius:50%;background:#1B6A55}
+
+/* ── Snippets, Schedule, Health, etc. extra utilities ── */
+.grid-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.snip-card{background:#fff;border:1px solid rgba(13,53,60,.08);border-radius:14px;box-shadow:var(--shadow-card);overflow:hidden;display:flex;flex-direction:column;transition:transform .2s ease,box-shadow .2s ease}
+.snip-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-soft)}
+.snip-prev{height:96px;background:linear-gradient(180deg,#E9F6F8,#FFFFFF);border-bottom:1px solid rgba(13,53,60,.06);display:grid;place-items:center;color:var(--ust-dark);position:relative;overflow:hidden}
+.snip-prev.dark{background:linear-gradient(135deg,#083A40 0%,#0D6E77 38%,#53D1DD 100%);color:#fff}
+.snip-prev .typ-mini{position:absolute;top:8px;left:8px;font-size:9px;font-weight:800;background:rgba(255,255,255,.85);color:var(--ust-deep);padding:3px 8px;border-radius:999px;text-transform:uppercase;letter-spacing:.05em}
+.snip-prev.dark .typ-mini{background:rgba(255,255,255,.18);color:#fff}
+.snip-prev .label-mini{font-size:11px;font-weight:800;letter-spacing:-.01em}
+.snip-info{padding:12px 14px;flex:1 1 auto;display:flex;flex-direction:column;gap:6px}
+.snip-info b{font-size:14px;color:var(--ust-deep);font-weight:700;letter-spacing:-.01em}
+.snip-info .desc{font-size:12px;color:#52646C;line-height:1.4}
+.snip-meta{padding:10px 14px;border-top:1px solid rgba(13,53,60,.06);display:flex;align-items:center;justify-content:space-between;font-size:11.5px;color:#7F8B92}
+.snip-meta .used{display:inline-flex;align-items:center;gap:5px;font-weight:700;color:var(--ust-dark)}
+
+/* Calendar */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:rgba(13,53,60,.08);border:1px solid rgba(13,53,60,.08);border-radius:14px;overflow:hidden}
+.cal-h{background:#F8FBFC;padding:8px 10px;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#7F8B92;font-weight:700;text-align:center}
+.cal-cell{background:#fff;min-height:118px;padding:8px 10px;display:flex;flex-direction:column;gap:5px;position:relative}
+.cal-cell .d{font-size:12px;color:#52646C;font-weight:600}
+.cal-cell.dim{background:#FAFCFC}
+.cal-cell.dim .d{color:#B5C0C5}
+.cal-cell.today .d{color:#fff;background:var(--ust-dark);width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-weight:800}
+.cal-evt{padding:4px 7px;border-radius:5px;font-size:10.5px;font-weight:700;line-height:1.2;cursor:pointer;display:flex;align-items:center;gap:4px}
+.cal-evt.pub{background:#E0F5EB;color:#1B6A55}
+.cal-evt.unpub{background:#FFE0E0;color:#9A1F2B}
+.cal-evt.exp{background:#FFF1DD;color:#8E520E}
+.cal-evt.draft{background:#E3F0FE;color:#175AA8}
+
+/* Diff side-by-side */
+.diff{display:grid;grid-template-columns:1fr 1fr;gap:0;background:rgba(13,53,60,.08);border:1px solid rgba(13,53,60,.08);border-radius:14px;overflow:hidden}
+.diff-col{background:#fff;display:flex;flex-direction:column}
+.diff-h{padding:12px 14px;border-bottom:1px solid rgba(13,53,60,.06);display:flex;align-items:center;gap:8px;font-size:12px;color:#52646C;font-weight:600}
+.diff-h .pill{font-size:10.5px;font-weight:800;padding:3px 8px;border-radius:999px;text-transform:uppercase;letter-spacing:.05em}
+.diff-h .pill.draft{background:#FFF1DD;color:#8E520E}
+.diff-h .pill.prod{background:#E0F5EB;color:#1B6A55}
+.diff-body{padding:0}
+.diff-line{padding:10px 14px;border-bottom:1px solid rgba(13,53,60,.04);font-size:12.5px;color:#3F4F58;display:flex;align-items:flex-start;gap:8px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-weight:500}
+.diff-line.add{background:#F0FBF7}
+.diff-line.del{background:#FEF4F5}
+.diff-line.add:before{content:"+";color:#1B6A55;font-weight:800;flex:0 0 auto}
+.diff-line.del:before{content:"−";color:#9A1F2B;font-weight:800;flex:0 0 auto}
+.diff-line.eq:before{content:" ";flex:0 0 auto;width:10px}
+.diff-key{color:#7F8B92}
+.diff-val{color:var(--ust-deep)}
+
+/* Audit-style event row reuse */
+.audit-event{display:grid;grid-template-columns:128px 36px 1fr auto;gap:14px;padding:12px 18px;border-bottom:1px solid rgba(13,53,60,.04);align-items:center;cursor:pointer}
+.audit-event:hover{background:#FAFCFC}
+.audit-event.expanded{background:#F0FBFC;border-left:3px solid var(--ust-dark);padding-left:15px}
+.audit-event .ts{font-variant-numeric:tabular-nums;font-size:12px;color:#52646C}
+.audit-event .ts span{display:block;font-size:11px;color:#9DA9B0}
+.audit-event .who{width:32px;height:32px;border-radius:50%;color:#fff;display:grid;place-items:center;font-weight:800;font-size:11px}
+.audit-event .desc{font-size:13px;color:#3F4F58}
+.audit-event .desc b{color:var(--ust-deep);font-weight:700}
+.audit-event .desc .verb{color:var(--ust-dark);font-weight:700}
+.audit-event .desc small{color:#7F8B92;display:block;margin-top:2px;font-size:11.5px}
+.audit-event .tags{display:flex;gap:5px}
+.audit-event .tag{font-size:10.5px;background:#F0F6F8;color:#3F4F58;padding:3px 8px;border-radius:999px;font-weight:600}
+.audit-event .tag.sev-info{background:#E3F0FE;color:#175AA8}
+.audit-event .tag.sev-warn{background:#FFF1DD;color:#8E520E}
+.audit-event .tag.sev-crit{background:#FFE0E0;color:#9A1F2B}
+.audit-expand{padding:16px 18px 20px 80px;background:#F8FBFC;border-bottom:1px solid rgba(13,53,60,.06)}
+.audit-expand .json{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;background:var(--ust-ink);color:#E6F0F2;padding:14px 16px;border-radius:10px;line-height:1.55;white-space:pre;overflow:auto}
+.audit-expand .json .k{color:#8DE0E7}
+.audit-expand .json .s{color:#FFD580}
+.audit-expand .json .n{color:#FF9C7A}
+.audit-expand .row-foot{display:flex;align-items:center;gap:10px;margin-top:10px}
+
+.footer-note{max-width:1440px;margin:40px auto 48px;padding:0 36px;text-align:center;color:#52646C;font-size:13px}
+.footer-note b{color:var(--ust-deep)}
+
+/* ── Inline modal (for Env Diff) ── */
+.modal-stage{position:relative;margin:0 28px 24px;min-height:520px;background:rgba(11,59,66,.32);border-radius:var(--radius-card);padding:36px;display:grid;place-items:flex-start center}
+.modal{width:100%;max-width:1080px;background:#fff;border-radius:18px;box-shadow:0 30px 70px rgba(7,25,30,.30);overflow:hidden}
+.modal-h{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid rgba(13,53,60,.06)}
+.modal-h b{font-size:18px;color:var(--ust-deep);font-weight:800;letter-spacing:-.02em}
+.modal-h .sub{font-size:12px;color:#7F8B92;margin-left:10px}
+.modal-b{padding:18px 22px;display:flex;flex-direction:column;gap:14px}
+.modal-foot{padding:14px 22px;border-top:1px solid rgba(13,53,60,.06);display:flex;align-items:center;justify-content:space-between;gap:10px;background:#FBFDFD}
+
+/* ── Preview-as-Role role picker ── */
+.role-picker{display:flex;gap:6px;flex-wrap:wrap;padding:14px 18px;background:linear-gradient(180deg,#F0FBFC,#fff);border-bottom:1px solid rgba(13,53,60,.06)}
+.role-picker .rp{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border:1px solid rgba(13,53,60,.10);background:#fff;border-radius:999px;font-size:12.5px;color:#3F4F58;font-weight:600;cursor:pointer}
+.role-picker .rp.on{background:var(--grad-1);color:#fff;border-color:transparent;box-shadow:0 6px 14px rgba(0,151,172,.30)}
+.role-picker .rp .dot{width:7px;height:7px;border-radius:50%;background:#B5C0C5}
+.role-picker .rp.on .dot{background:#fff}
+</style>
+</head>
+<body>
+
+<!-- ╔════ Meta header ════╗ -->
+<section class="mock-meta">
+  <span class="eyebrow">Suite+ Admin · V0.6 Mock — final after critique</span>
+  <h1>The admin a working operator actually wants.</h1>
+  <p>Twelve screens in the order an admin moves through them. The old vanity Dashboard and free-form WYSIWYG were retired by the two-specialist red-team (Webapp Admin · Web Builder); this build delivers their consensus: action-oriented landing, structured Site Composer with read-only live preview, plus the operational screens an enterprise admin lives in. Same UST teal + black + white face as the public portal.</p>
+  <div class="mock-toc">
+    <a href="#s1"><b>01</b> Action Dashboard</a>
+    <a href="#s2" class="new"><b>02</b> Site Composer</a>
+    <a href="#s3"><b>03</b> Capability Tiles</a>
+    <a href="#s4" class="new"><b>04</b> Snippets Library</a>
+    <a href="#s5" class="new"><b>05</b> Schedule &amp; Calendar</a>
+    <a href="#s6"><b>06</b> Redirects + SEO</a>
+    <a href="#s7"><b>07</b> Site Health</a>
+    <a href="#s8" class="new"><b>08</b> Preview-as-Role</a>
+    <a href="#s9"><b>09</b> Users &amp; Roles</a>
+    <a href="#s10" class="new"><b>10</b> SCIM Sync Errors</a>
+    <a href="#s11"><b>11</b> Approvals Inbox</a>
+    <a href="#s12"><b>12</b> Audit Log</a>
+    <a href="#s13" class="new"><b>13</b> Environment Diff (modal)</a>
+  </div>
+</section>
+
+<!-- ╔════ SCREEN 1 · Action Dashboard ════╗ -->
+<section class="screen" id="s1">
+  <div class="screen-frame">
+    <div class="screen-label">
+      <div class="screen-label-title"><span class="num">01</span><b>Action Dashboard</b><span>· the admin to-do list · replaces the V0.1 vanity widgets</span></div>
+      <span class="meta">Route · /admin</span>
+    </div>
+    <div class="app">
+      <aside class="rail">
+        <div class="rail-brand">
+          <div class="rail-mark"><span>U</span><span class="rail-mark-dot"></span><span>S</span><span>T</span></div>
+          <div class="rail-brand-copy"><b>Suite+ Admin</b><span>UST AI Suite+ for SAP</span></div>
+        </div>
+        <div class="rail-search"><input placeholder="Search anything…" /><kbd>⌘K</kbd></div>
+        <nav class="rail-nav">
+          <div class="rail-section">
+            <div class="rail-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12h4v8H3zM10 4h4v16h-4zM17 8h4v12h-4z" stroke-linejoin="round"/></svg>Overview</div>
+          </div>
+          <div class="rail-section">
+            <div class="rail-section-title">Configure</div>
+            <div class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M3 8h18M7 21h10"/></svg>Site Composer</div>
+            <div class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Capabilities <span class="count">8</span></div>
+            <div class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>Snippets <span class="count">11</span></div>
+            <div class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Schedule <span class="count">4</span></div>
+            <div class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12h16M14 6l6 6-6 6M10 18l-6-6 6-6"/></svg>Redirects &amp; SEO</div>
+          </div>
+          <div class="rail-section">
+            <div class="rail-section-title">Operate</div>
+            <div class="rail-item">Approvals Inbox <span class="count">3</span></div>
+            <div class="rail-item">Site Health <span class="count" style="background:#FFE0E0;color:#9A1F2B">2</span></div>
+            <div class="rail-item">Preview-as-Role</div>
+            <div class="rail-item">SCIM Sync <span class="count" style="background:#FFF1DD;color:#8E520E">1</span></div>
+          </div>
+          <div class="rail-section">
+            <div class="rail-section-title">Govern</div>
+            <div class="rail-item">People &amp; Access</div>
+            <div class="rail-item">Audit log</div>
+            <div class="rail-item">Governance <span class="count">3</span></div>
+          </div>
+        </nav>
+        <div class="rail-foot">
+          <div class="avatar">JP</div>
+          <div class="id"><b>John Patrick</b><span>UST SAP GTM</span></div>
+          <span class="role-chip">Suite Admin</span>
+        </div>
+      </aside>
+
+      <div class="work">
+        <div class="topbar">
+          <div class="breadcrumb"><b>Overview</b><span style="margin-left:10px;color:#7F8B92">5 items need your attention</span></div>
+          <div class="top-right">
+            <div class="env-switcher"><span class="env-dot"></span> Production <kbd>⌘E</kbd>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+            <button class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 4h11l3 3v13H5z" stroke-linejoin="round"/></svg><span class="badge"></span></button>
+            <button class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9a6 6 0 0 1 12 0v5l2 3H4l2-3V9z"/></svg></button>
+            <div class="top-avatar">JP</div>
+          </div>
+        </div>
+
+        <div class="actionbar">
+          <div class="actionbar-l">
+            <h1>Good morning, JP.</h1>
+            <p>5 things need your attention. Oldest open <b style="color:#9A1F2B">1h 12m past SLA</b>. Adoption metrics moved to Observability.</p>
+          </div>
+          <div class="actionbar-r">
+            <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M5 6h14M5 18h10" stroke-linecap="round"/></svg> Filter: Mine only</button>
+            <button class="btn primary">Resolve all<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          </div>
+        </div>
+
+        <div class="content">
+          <div class="dash" style="grid-template-columns:1.4fr 1fr 1fr;gap:18px;margin-bottom:18px">
+            <div class="card">
+              <div class="card-h"><h3>🔔 Things requiring your action</h3><span class="meta" style="color:#9A1F2B;font-weight:800">2 past SLA</span></div>
+              <div class="card-b">
+                <div class="approval-row"><span class="badge" style="background:#FFE0E0;color:#9A1F2B">Past SLA · 4h</span><div class="desc"><b>Publish · Landing page v48 → Prod</b><br><span>Drafted by John P. · approver on PTO · escalation in 2h</span></div><button class="btn primary" style="padding:6px 12px;font-size:12px">Review now</button></div>
+                <div class="approval-row"><span class="badge" style="background:#FFE0E0;color:#9A1F2B">Past SLA · 1h</span><div class="desc"><b>Role grant · Capability Owner on CX Life Sciences</b><br><span>Requester Priya S. · routed via delegation</span></div><button class="btn primary" style="padding:6px 12px;font-size:12px">Decide</button></div>
+                <div class="approval-row"><span class="badge">SLA · 22h left</span><div class="desc"><b>Integration · bind Destination signavio-prod</b><br><span>Requester Rakesh K. · 4h ago</span></div><button class="btn" style="padding:6px 12px;font-size:12px">Review</button></div>
+                <div class="approval-row"><span class="badge">Access</span><div class="desc"><b>karan.b@ust.com</b> requested <b>Content Admin</b><br><span>Justification provided · yesterday 17:32</span></div><button class="btn" style="padding:6px 12px;font-size:12px">Decide</button></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-h"><h3>⚠ Tiles failing health</h3><span class="meta" style="color:#9A1F2B;font-weight:800">2 broken</span></div>
+              <div class="card-b">
+                <div class="approval-row"><span class="badge" style="background:#FFE0E0;color:#9A1F2B">Down</span><div class="desc"><b>FlexIOM</b><br><span>flexiom-prod · 5xx 12m · last good 09:14</span></div><button class="btn" style="padding:6px 12px;font-size:12px">Open</button></div>
+                <div class="approval-row"><span class="badge" style="background:#FFF1DD;color:#8E520E">Slow</span><div class="desc"><b>CX for Insurance</b><br><span>p95 4.2s · threshold 2s · 23m</span></div><button class="btn" style="padding:6px 12px;font-size:12px">Open</button></div>
+                <div style="padding-top:10px;border-top:1px solid rgba(13,53,60,.06);margin-top:6px"><a style="color:var(--ust-dark);font-weight:700;font-size:13px">View Site Health →</a></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-h"><h3>⤺ Recent prod publishes</h3><span class="meta">last 24h</span></div>
+              <div class="card-b">
+                <div class="approval-row"><span class="badge" style="background:#E0F5EB;color:#1B6A55">v47</span><div class="desc"><b>Landing page</b> · 2h ago · Mohamed J.<br><span>6 block changes · bundle 7a4e…</span></div><button class="btn" style="padding:6px 12px;font-size:12px">Rollback</button></div>
+                <div class="approval-row"><span class="badge" style="background:#E0F5EB;color:#1B6A55">v46</span><div class="desc"><b>RIA tile route</b> · 8h ago · Priya S.<br><span>Deep-link template updated</span></div><button class="btn" style="padding:6px 12px;font-size:12px">Rollback</button></div>
+                <div class="approval-row"><span class="badge" style="background:#E0F5EB;color:#1B6A55">v45</span><div class="desc"><b>Lanes order</b> · Yesterday · John P.<br><span>Industry/Domain moved to position 9</span></div><button class="btn" style="padding:6px 12px;font-size:12px">Rollback</button></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dash" style="grid-template-columns:1fr 1fr 1fr;gap:18px">
+            <div class="card">
+              <div class="card-h"><h3>🔌 SCIM sync</h3><span class="meta" style="color:#8E520E;font-weight:800">1 error</span></div>
+              <div class="card-b">
+                <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid #FFE7B8;border-radius:10px;background:#FFF8EC;margin-bottom:10px">
+                  <span style="width:8px;height:8px;border-radius:50%;background:#8E520E;box-shadow:0 0 0 3px rgba(216,147,10,.18);flex:0 0 auto"></span>
+                  <div style="font-size:12.5px;color:#0B3B42;font-weight:600;flex:1">Duplicate externalId · group ust-fin-leads<br><span style="font-weight:500;color:#52646C;font-size:12px">3 retries · since 06:08 · 412 users last good 04:00</span></div>
+                </div>
+                <a style="color:var(--ust-dark);font-weight:700;font-size:13px">View SCIM error queue →</a>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-h"><h3>📝 Stale drafts</h3><span class="meta">3 at risk</span></div>
+              <div class="card-b">
+                <div class="audit-row" style="grid-template-columns:1fr auto;padding:10px 0"><span class="act"><b>v48 landing</b> · 14d ago<br><small style="color:#7F8B92">Author: John P.</small></span><span class="tag" style="background:#FFF1DD;color:#8E520E">Stale</span></div>
+                <div class="audit-row" style="grid-template-columns:1fr auto;padding:10px 0"><span class="act"><b>RIA tile description</b> · 10d<br><small style="color:#7F8B92">Author: Priya S.</small></span><span class="tag" style="background:#FFF1DD;color:#8E520E">Stale</span></div>
+                <div class="audit-row" style="grid-template-columns:1fr auto;padding:10px 0"><span class="act"><b>Footer disclaimer snippet</b> · 8d<br><small style="color:#7F8B92">Author: Anika B.</small></span><span class="tag">Aging</span></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-h"><h3>🔑 Secrets expiring</h3><span class="meta">3 in 30d</span></div>
+              <div class="card-b">
+                <div class="audit-row" style="grid-template-columns:1fr auto;padding:10px 0"><span class="act"><b>webhook · tile.published</b> · expires 11d<br><small style="color:#7F8B92">BTP Credential Store</small></span><span class="tag" style="background:#FFE0E0;color:#9A1F2B">Soon</span></div>
+                <div class="audit-row" style="grid-template-columns:1fr auto;padding:10px 0"><span class="act"><b>flexiom-prod mTLS</b> · 19d<br><small style="color:#7F8B92">BTP Destination Service</small></span><span class="tag" style="background:#FFF1DD;color:#8E520E">Plan</span></div>
+                <div class="audit-row" style="grid-template-columns:1fr auto;padding:10px 0"><span class="act"><b>API key · power-user-read</b> · 28d<br><small style="color:#7F8B92">issued by John P.</small></span><span class="tag" style="background:#FFF1DD;color:#8E520E">Plan</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ╔════ SCREEN 2 · Site Composer (replaces WYSIWYG) ════╗ -->
+<section class="screen" id="s2">
+  <div class="screen-frame">
+    <div class="screen-label">
+      <div class="screen-label-title"><span class="num">02</span><b>Site Composer</b><span>· structured editor + read-only live preview · replaces V0.1 free-form WYSIWYG</span><span class="new-badge">REVISED</span></div>
+      <span class="meta">Route · /admin/site/landing</span>
+    </div>
+    <div class="app">
+      <aside class="rail">
+        <div class="rail-brand"><div class="rail-mark"><span>U</span><span class="rail-mark-dot"></span><span>S</span><span>T</span></div><div class="rail-brand-copy"><b>Suite+ Admin</b><span>Site Composer</span></div></div>
+        <div class="rail-search"><input placeholder="Search…" /><kbd>⌘K</kbd></div>
+        <nav class="rail-nav">
+          <div class="rail-item">Overview</div>
+          <div class="rail-section"><div class="rail-section-title">Configure</div>
+            <div class="rail-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M3 8h18M7 21h10"/></svg>Site Composer</div>
+            <div class="rail-sub"><a class="active">Landing page</a><a>Capability tiles</a><a>Lanes</a><a>Branding</a><a>Media</a><a>Snippets</a><a>Redirects &amp; SEO</a></div>
+            <div class="rail-item">Capabilities <span class="count">8</span></div>
+          </div>
+          <div class="rail-section"><div class="rail-section-title">Operate</div><div class="rail-item">Approvals Inbox <span class="count">3</span></div><div class="rail-item">Site Health <span class="count" style="background:#FFE0E0;color:#9A1F2B">2</span></div></div>
+        </nav>
+        <div class="rail-foot"><div class="avatar">JP</div><div class="id"><b>John Patrick</b><span>UST SAP GTM</span></div><span class="role-chip">Suite Admin</span></div>
+      </aside>
+
+      <div class="work">
+        <div class="topbar">
+          <div class="breadcrumb"><span>Site Composer</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round"/></svg><b>Landing page</b><span class="draft-chip" style="margin-left:8px">Draft v48</span></div>
+          <div class="top-right">
+            <div class="env-switcher env-stage"><span class="env-dot"></span> Preview · v48 <kbd>⌘E</kbd><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></div>
+            <div class="top-avatar">JP</div>
+          </div>
+        </div>
+
+        <div class="composer-bar">
+          <div class="composer-bar-l">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="9"/><path d="M12 7v6l4 2" stroke-linecap="round"/></svg>
+            Structured composer · <b>preview is read-only</b> · all changes happen in the Properties panel · drag-drop is disabled on the canvas
+          </div>
+          <span class="saved-pill">Saved 2s ago</span>
+        </div>
+
+        <div class="actionbar" style="padding-top:18px">
+          <div class="actionbar-l">
+            <h1>Landing page</h1>
+            <p>Build the page as a list of typed blocks. Each block has typed fields, optional visibility rules, schedule windows, and SEO overrides. Reorder with the up/down buttons. Reusable blocks pull from the Snippets library.</p>
+          </div>
+          <div class="actionbar-r">
+            <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l9 6 9-6M3 8v10h18V8M3 8l9-5 9 5"/></svg> Share preview link</button>
+            <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h8M8 6l-4 6 4 6M20 12c0 4-4 6-8 6"/></svg> History (47)</button>
+            <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z" stroke-linecap="round"/></svg> Preview-as Role</button>
+            <button class="btn primary">Publish to Prod<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          </div>
+        </div>
+
+        <div class="composer">
+          <!-- Block list (left) -->
+          <div class="block-list">
+            <div class="bl-h"><b>Blocks</b><span class="count">7 of 7</span></div>
+            <div class="bl-items">
+              <div class="bl-item selected"><span class="ord">1</span><div class="lbl"><b>Hero</b><span>Showcase canvas · animated</span></div><span class="badge-mini b-vis">VIS</span><span class="move"><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 15l6-6 6 6"/></svg></button><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></button></span></div>
+              <div class="bl-item"><span class="ord">2</span><div class="lbl"><b>Overview band</b><span>4 KPI cards</span></div><span class="move"><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 15l6-6 6 6"/></svg></button><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></button></span></div>
+              <div class="bl-item"><span class="ord">3</span><div class="lbl"><b>Lane grid</b><span>9 audience lanes</span></div><span class="move"><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 15l6-6 6 6"/></svg></button><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></button></span></div>
+              <div class="bl-item"><span class="ord">4</span><div class="lbl"><b>Capability grid</b><span>auto-bound to enabled tiles</span></div><span class="move"><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 15l6-6 6 6"/></svg></button><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></button></span></div>
+              <div class="bl-item"><span class="ord">5</span><div class="lbl"><b>Story strip</b><span>3 story cards</span></div><span class="badge-mini b-sched">SCHED</span><span class="move"><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 15l6-6 6 6"/></svg></button><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></button></span></div>
+              <div class="bl-item"><span class="ord">6</span><div class="lbl"><b>SAPPHIRE CTA</b><span>from Snippets · used in 3 pages</span></div><span class="badge-mini b-snip">SNIP</span><span class="move"><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 15l6-6 6 6"/></svg></button><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></button></span></div>
+              <div class="bl-item"><span class="ord">7</span><div class="lbl"><b>Footer</b><span>from Snippets · global</span></div><span class="badge-mini b-snip">SNIP</span><span class="move"><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 15l6-6 6 6"/></svg></button><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></button></span></div>
+            </div>
+            <div class="bl-add"><button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg> Add block · pick a type</button></div>
+          </div>
+
+          <!-- Read-only preview (center) -->
+          <div class="preview-pane">
+            <div class="pp-top">
+              <div class="pp-top-l">
+                <span class="pp-readonly">Read-only · view source of truth</span>
+                <span style="font-size:12px;color:#52646C">Editing on the right →</span>
+              </div>
+              <div style="display:flex;gap:8px;align-items:center">
+                <div class="pp-device"><button class="active">Desktop</button><button>Tablet</button><button>Mobile</button></div>
+                <span style="font-size:12px;color:#52646C">Zoom <b style="color:var(--ust-deep);font-weight:700">75%</b></span>
+              </div>
+            </div>
+            <div class="pp-stage">
+              <div class="pp-frame">
+                <div class="pp-url"><span><b>Preview</b> · v48 draft</span><code>ust-ai-suite-plus-sap.cfapps.us10-001.hana.ondemand.com</code></div>
+                <div class="pp-block sel">
+                  <span class="lab">Hero · selected</span>
+                  <div class="pp-hero">
+                    <span class="eb">UST SAP capability showcase</span>
+                    <h2>UST AI Suite+ for SAP · SAPPHIRE Edition</h2>
+                    <p>A modern portfolio of AI-enabled accelerators, SAP-focused solution assets, and practical business tools.</p>
+                  </div>
+                </div>
+                <div class="pp-block">
+                  <div class="pp-grid">
+                    <div class="pp-tile"><b>RIA</b><span>See what an SAP change may touch.</span><br><span class="bd">Live</span></div>
+                    <div class="pp-tile"><b>Client University</b><span>Faster learning &amp; adoption.</span><br><span class="bd" style="background:#E3F0FE;color:#175AA8">Demo</span></div>
+                    <div class="pp-tile"><b>Rapid Assessment</b><span>Structured discovery.</span><br><span class="bd" style="background:#E3F0FE;color:#175AA8">Demo</span></div>
+                    <div class="pp-tile"><b>ROI Calculator</b><span>Credible value cases.</span><br><span class="bd" style="background:#E3F0FE;color:#175AA8">Demo</span></div>
+                  </div>
+                </div>
+                <div class="pp-snip">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 3v18" stroke-linecap="round"/></svg>
+                  <span><b>Snippet · SAPPHIRE CTA</b> · edit in Snippets Library · affects 3 places</span>
+                </div>
+                <div class="pp-block">
+                  <div class="pp-cta">
+                    <b>Lead with the right story.</b>
+                    Use Suite+ to guide the conversation from need to capability.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Properties (right) -->
+          <div class="props">
+            <div class="props-h"><b>Hero block</b><span class="typ">Structured</span></div>
+            <div class="props-tabs">
+              <button class="active">Content</button>
+              <button>Style</button>
+              <button>Visibility</button>
+              <button>Schedule</button>
+              <button>SEO</button>
+              <button>A11y</button>
+            </div>
+            <div class="props-b">
+              <div class="field"><label>Eyebrow text</label><input value="UST SAP capability showcase" /><span class="help-line">Max 48 chars · shown above the headline</span></div>
+              <div class="field"><label>Headline</label><input value="UST AI Suite+ for SAP · SAPPHIRE Edition" /></div>
+              <div class="field"><label>Sub-headline</label><textarea>A modern portfolio of AI-enabled accelerators, SAP-focused solution assets, and practical business tools.</textarea></div>
+              <div class="field"><label>Background style</label><select><option>Showcase canvas (dark teal)</option><option>Light wash</option><option>Brand black</option></select></div>
+              <div class="field"><label>Accent token (locked to UST palette)</label>
+                <div class="token-row">
+                  <span class="tok active" style="background:#006E74" title="UST Dark"></span>
+                  <span class="tok" style="background:#0097AC" title="UST Mid"></span>
+                  <span class="tok" style="background:#8DE0E7" title="UST Soft"></span>
+                  <span class="tok" style="background:#0E1F25" title="UST Ink"></span>
+                  <span class="tok" style="background:#FFFFFF;border-color:rgba(13,53,60,.20)" title="White"></span>
+                </div>
+                <span class="help-line">No freeform hex. Theme is governed.</span>
+              </div>
+              <div class="field row">
+                <label class="toggle"><input type="checkbox" checked /><span class="sw"></span> Animation</label>
+                <label class="toggle"><input type="checkbox" checked /><span class="sw"></span> Quick chips</label>
+              </div>
+              <div style="border-top:1px solid rgba(13,53,60,.06);padding-top:12px;margin-top:4px">
+                <div style="font-size:11px;text-transform:uppercase;letter-spacing:.10em;color:#7F8B92;font-weight:700;margin-bottom:8px">Block actions</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+                  <button class="btn ghost" style="font-size:12px;padding:7px 10px">Duplicate block</button>
+                  <button class="btn ghost" style="font-size:12px;padding:7px 10px">Save as snippet</button>
+                  <button class="btn ghost" style="font-size:12px;padding:7px 10px">Move to…</button>
+                  <button class="btn ghost" style="font-size:12px;padding:7px 10px;color:#9A1F2B">Delete block</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ╔════ SCREEN 3 · Capability Tile Editor ════╗ -->
+<section class="screen" id="s3">
+  <div class="screen-frame">
+    <div class="screen-label">
+      <div class="screen-label-title"><span class="num">03</span><b>Capability Tile Editor</b><span>· the &ldquo;hyperlinks for tiles&rdquo; surface · registry-bound · drawer open on RIA</span></div>
+      <span class="meta">Route · /admin/site/tiles</span>
+    </div>
+    <div class="app">
+      <aside class="rail">
+        <div class="rail-brand"><div class="rail-mark"><span>U</span><span class="rail-mark-dot"></span><span>S</span><span>T</span></div><div class="rail-brand-copy"><b>Suite+ Admin</b><span>Site Composer</span></div></div>
+        <div class="rail-search"><input placeholder="Search…" /><kbd>⌘K</kbd></div>
+        <nav class="rail-nav">
+          <div class="rail-item">Overview</div>
+          <div class="rail-section"><div class="rail-section-title">Configure</div>
+            <div class="rail-item active">Site Composer</div>
+            <div class="rail-sub"><a>Landing page</a><a class="active">Capability tiles</a><a>Lanes</a><a>Snippets</a><a>Redirects &amp; SEO</a></div>
+            <div class="rail-item">Capabilities <span class="count">8</span></div>
+          </div>
+          <div class="rail-section"><div class="rail-section-title">Operate</div><div class="rail-item">Approvals Inbox <span class="count">3</span></div><div class="rail-item">Site Health <span class="count" style="background:#FFE0E0;color:#9A1F2B">2</span></div></div>
+        </nav>
+        <div class="rail-foot"><div class="avatar">JP</div><div class="id"><b>John Patrick</b><span>UST SAP GTM</span></div><span class="role-chip">Suite Admin</span></div>
+      </aside>
+      <div class="work">
+        <div class="topbar">
+          <div class="breadcrumb"><span>Site Composer</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round"/></svg><b>Capability tiles</b></div>
+          <div class="top-right">
+            <div class="env-switcher"><span class="env-dot"></span> Production<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></div>
+            <div class="top-avatar">JP</div>
+          </div>
+        </div>
+        <div class="actionbar">
+          <div class="actionbar-l"><h1>Capability tiles</h1><p>Each tile is bound to a registered capability + a deep-link template. Destinations resolve at click time. No raw URLs.</p></div>
+          <div class="actionbar-r">
+            <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg> Register capability</button>
+            <button class="btn primary">Reorder &amp; publish<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          </div>
+        </div>
+
+        <div class="drawer-stage">
+          <div class="table-wrap">
+            <div class="table-tools">
+              <div class="filters">
+                <span class="chip active">All <b style="color:var(--ust-dark);font-weight:800">8</b></span>
+                <span class="chip">Live</span><span class="chip">Demo</span><span class="chip">Available</span><span class="chip">Coming soon</span><span class="chip">Hidden</span>
+              </div>
+              <div class="search-mini"><input placeholder="Filter by name, lane, or route" /></div>
+            </div>
+            <table class="tbl">
+              <thead><tr><th>Tile</th><th>Lanes</th><th>Route</th><th>Status</th><th>Visibility</th><th>Last edited</th><th></th></tr></thead>
+              <tbody>
+                <tr class="selected"><td><span class="tile-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="8" height="6" rx="1.5"/><rect x="13" y="4" width="8" height="6" rx="1.5"/><rect x="8" y="14" width="8" height="6" rx="1.5"/></svg></span><span class="name"><b>RIA</b><span>Rapid Impact Analyzer</span></span></td><td><span class="lane-chip">Developers</span><span class="lane-chip">Architects</span><span class="lane-chip" style="background:#F0F6F8;color:#52646C">+3</span></td><td><span class="route"><code>capability/ria → /assessment/{tenantId}</code></span></td><td><span class="status-pill st-live">Live</span></td><td><span class="vis">✓ Public</span></td><td><span class="last">2h ago · JP</span></td><td></td></tr>
+                <tr><td><span class="tile-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="4" width="12" height="14" rx="2"/></svg></span><span class="name"><b>Client University</b><span>Enablement</span></span></td><td><span class="lane-chip">Ops</span><span class="lane-chip">Business</span></td><td><span class="route"><code>capability/cu → /learn/{moduleId}</code></span></td><td><span class="status-pill st-demo">Demo</span></td><td><span class="vis">✓ Public</span></td><td><span class="last">Yesterday · PS</span></td><td></td></tr>
+                <tr><td><span class="tile-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="14" rx="2"/></svg></span><span class="name"><b>Rapid Assessment</b><span>Accelerator</span></span></td><td><span class="lane-chip">Consultants</span><span class="lane-chip">Executives</span></td><td><span class="route"><code>capability/ra → /assessment/new</code></span></td><td><span class="status-pill st-demo">Demo</span></td><td><span class="vis">✓ Public</span></td><td><span class="last">3d ago · MJ</span></td><td></td></tr>
+                <tr><td><span class="tile-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/></svg></span><span class="name"><b>ROI Calculator</b><span>Calculator</span></span></td><td><span class="lane-chip">Finance</span><span class="lane-chip">Executives</span></td><td><span class="route"><code>capability/roi → /calculator</code></span></td><td><span class="status-pill st-demo">Demo</span></td><td><span class="vis">✓ Public</span></td><td><span class="last">5d ago · RK</span></td><td></td></tr>
+                <tr><td><span class="tile-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 17l4-5 3 3 5-7 6 9"/></svg></span><span class="name"><b>Trade Promotion Optimizer</b><span>Industry</span></span></td><td><span class="lane-chip">Industry</span><span class="lane-chip">Business</span></td><td><span class="route"><code>capability/tpo → /plans/{planId}</code></span></td><td><span class="status-pill st-demo">Demo</span></td><td><span class="vis" style="color:#52646C">Role-gated</span></td><td><span class="last">1w · AB</span></td><td></td></tr>
+                <tr><td><span class="tile-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="6" height="18" rx="2"/><rect x="14" y="3" width="6" height="18" rx="2"/></svg></span><span class="name"><b>CX for Life Sciences</b><span>Industry</span></span></td><td><span class="lane-chip">Industry</span><span class="lane-chip">Business</span></td><td><span class="route"><code>capability/cx-ls → /journeys</code></span></td><td><span class="status-pill st-avail">Available</span></td><td><span class="vis">✓ Public</span></td><td><span class="last">2w · MJ</span></td><td></td></tr>
+                <tr><td><span class="tile-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l8 4v8c0 4-3.6 7-8 8-4.4-1-8-4-8-8V7z"/></svg></span><span class="name"><b>CX for Insurance</b><span>Industry</span></span></td><td><span class="lane-chip">Industry</span><span class="lane-chip">Business</span></td><td><span class="route"><code>capability/cx-ins → /policies</code></span></td><td><span class="status-pill st-avail">Available</span></td><td><span class="vis">✓ Public</span></td><td><span class="last">2w · MJ</span></td><td></td></tr>
+                <tr><td><span class="tile-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="18" height="12" rx="2"/></svg></span><span class="name"><b>FlexIOM</b><span>SAP accelerator</span></span></td><td><span class="lane-chip">Business</span><span class="lane-chip">Industry</span></td><td><span class="route"><code>capability/flexiom → /orders/{orderId}</code></span></td><td><span class="status-pill st-danger">5xx · 12m</span></td><td><span class="vis" style="color:#52646C">Role-gated</span></td><td><span class="last">3w · RK</span></td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="drawer">
+            <div class="drawer-h">
+              <div class="title"><b>Edit tile · RIA</b><span>Rapid Impact Analyzer · capability ID <code style="font-family:ui-monospace,monospace;font-size:11px;background:#F4FAFB;padding:1px 5px;border-radius:4px">ria</code></span></div>
+              <button class="drawer-h .close" style="width:30px;height:30px;border-radius:8px;background:#F4FAFB;border:1px solid rgba(13,53,60,.08);display:grid;place-items:center;color:#52646C"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 5l14 14M19 5L5 19" stroke-linecap="round"/></svg></button>
+            </div>
+            <div class="drawer-b">
+              <div class="drawer-section"><div class="sec-title">Route · how the tile opens</div>
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <div style="display:flex;gap:10px;padding:12px;border:1px solid var(--ust-dark);border-radius:10px;background:linear-gradient(180deg,#F0FBFC,#E6F6F8);box-shadow:inset 0 0 0 1px var(--ust-dark)"><span style="margin-top:2px;width:16px;height:16px;border-radius:50%;border:2px solid var(--ust-dark);display:grid;place-items:center"><span style="width:6px;height:6px;border-radius:50%;background:var(--ust-dark)"></span></span><div><b style="display:block;font-size:13.5px;color:var(--ust-deep)">Internal capability route</b><span style="display:block;font-size:12px;color:#52646C;margin-top:2px">Resolves through the Capability Registry. Destination URL changes don't require admin edits.</span><code style="margin-top:6px;display:inline-block;font-family:ui-monospace,monospace;font-size:11px;background:rgba(0,110,116,.08);color:var(--ust-dark);padding:3px 8px;border-radius:6px;border:1px solid rgba(0,110,116,.18)">capability/ria → /assessment/{tenantId}</code></div></div>
+                  <div style="display:flex;gap:10px;padding:12px;border:1px solid rgba(13,53,60,.10);border-radius:10px;background:#F8FBFC"><span style="margin-top:2px;width:16px;height:16px;border-radius:50%;border:2px solid #B5C0C5"></span><div><b style="display:block;font-size:13.5px;color:var(--ust-deep)">External URL</b><span style="display:block;font-size:12px;color:#52646C;margin-top:2px">Direct link · domain allow-list · audited per click.</span></div></div>
+                  <div style="display:flex;gap:10px;padding:12px;border:1px solid rgba(13,53,60,.10);border-radius:10px;background:#F8FBFC"><span style="margin-top:2px;width:16px;height:16px;border-radius:50%;border:2px solid #B5C0C5"></span><div><b style="display:block;font-size:13.5px;color:var(--ust-deep)">Coming-soon stub</b><span style="display:block;font-size:12px;color:#52646C;margin-top:2px">Renders a polite stub. Captures interest signups.</span></div></div>
+                </div>
+              </div>
+              <div class="drawer-section"><div class="sec-title">Lanes</div>
+                <div style="display:flex;flex-wrap:wrap;gap:6px">
+                  <span class="chip" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;background:linear-gradient(135deg,#E9F8F9,#DBF1F4);border:1px solid rgba(0,151,172,.30);font-size:12px;color:var(--ust-dark);font-weight:700">Developers · primary</span>
+                  <span class="chip" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;background:linear-gradient(135deg,#E9F8F9,#DBF1F4);border:1px solid rgba(0,151,172,.30);font-size:12px;color:var(--ust-dark);font-weight:700">Architects</span>
+                  <span class="chip" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;background:linear-gradient(135deg,#E9F8F9,#DBF1F4);border:1px solid rgba(0,151,172,.30);font-size:12px;color:var(--ust-dark);font-weight:700">Consultants</span>
+                  <span class="chip" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;background:linear-gradient(135deg,#E9F8F9,#DBF1F4);border:1px solid rgba(0,151,172,.30);font-size:12px;color:var(--ust-dark);font-weight:700">Ops</span>
+                  <span class="chip" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;background:linear-gradient(135deg,#E9F8F9,#DBF1F4);border:1px solid rgba(0,151,172,.30);font-size:12px;color:var(--ust-dark);font-weight:700">Governance</span>
+                  <span class="chip" style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;background:#fff;border:1px solid rgba(13,53,60,.10);font-size:12px;color:#3F4F58;font-weight:600">Executives</span>
+                </div>
+              </div>
+              <div class="drawer-section"><div class="sec-title">Manifest health</div>
+                <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid rgba(13,53,60,.08);border-radius:10px;background:#F0FBF7">
+                  <span style="width:8px;height:8px;border-radius:50%;background:#1B6A55;box-shadow:0 0 0 3px rgba(28,158,106,.18)"></span>
+                  <span style="font-size:13px;color:var(--ust-deep);font-weight:600">Reachable · last fetch 12m ago · signature valid</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ╔════ SCREEN 4 · Snippets Library ════╗ -->
+<section class="screen" id="s4">
+  <div class="screen-frame">
+    <div class="screen-label">
+      <div class="screen-label-title"><span class="num">04</span><b>Snippets Library</b><span>· reusable global blocks · edit-once · propagate everywhere</span><span class="new-badge">NEW</span></div>
+      <span class="meta">Route · /admin/site/snippets</span>
+    </div>
+    <div class="app">
+      <aside class="rail">
+        <div class="rail-brand"><div class="rail-mark"><span>U</span><span class="rail-mark-dot"></span><span>S</span><span>T</span></div><div class="rail-brand-copy"><b>Suite+ Admin</b><span>Site Composer</span></div></div>
+        <div class="rail-search"><input placeholder="Search snippets…" /><kbd>⌘K</kbd></div>
+        <nav class="rail-nav">
+          <div class="rail-item">Overview</div>
+          <div class="rail-section"><div class="rail-section-title">Configure</div>
+            <div class="rail-item active">Site Composer</div>
+            <div class="rail-sub"><a>Landing page</a><a>Capability tiles</a><a>Lanes</a><a class="active">Snippets</a><a>Redirects &amp; SEO</a></div>
+            <div class="rail-item">Capabilities <span class="count">8</span></div>
+          </div>
+          <div class="rail-section"><div class="rail-section-title">Operate</div><div class="rail-item">Approvals Inbox <span class="count">3</span></div></div>
+        </nav>
+        <div class="rail-foot"><div class="avatar">JP</div><div class="id"><b>John Patrick</b><span>UST SAP GTM</span></div><span class="role-chip">Suite Admin</span></div>
+      </aside>
+      <div class="work">
+        <div class="topbar">
+          <div class="breadcrumb"><span>Site Composer</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round"/></svg><b>Snippets</b><span style="margin-left:8px;font-size:11px;background:#F0EAFF;color:#4B2C9A;padding:3px 8px;border-radius:999px;font-weight:800;text-transform:uppercase;letter-spacing:.06em">Edit-once · propagates to 23 places</span></div>
+          <div class="top-right"><div class="env-switcher"><span class="env-dot"></span> Production<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></div><div class="top-avatar">JP</div></div>
+        </div>
+        <div class="actionbar">
+          <div class="actionbar-l"><h1>Snippets</h1><p>Reusable content blocks. Change once — every page, tile and email using the snippet updates on the next publish. Use for footer disclaimers, recurring CTAs, legal copy, event banners.</p></div>
+          <div class="actionbar-r">
+            <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 5h14v14H5zM9 9h6M9 13h4"/></svg> Import</button>
+            <button class="btn primary">New snippet<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg></button>
+          </div>
+        </div>
+        <div class="content">
+          <div class="table-tools" style="background:#fff;border:1px solid rgba(13,53,60,.08);border-radius:14px;margin-bottom:18px;padding:12px 18px">
+            <div class="filters">
+              <span class="chip active">All <b style="color:var(--ust-dark);font-weight:800">11</b></span>
+              <span class="chip">CTA <b>3</b></span><span class="chip">Footer <b>2</b></span><span class="chip">Banner <b>2</b></span><span class="chip">Legal <b>2</b></span><span class="chip">Disclaimer <b>2</b></span><span class="chip">Unused</span>
+            </div>
+            <div class="search-mini"><input placeholder="Search snippets" /></div>
+          </div>
+          <div class="grid-cards">
+            <div class="snip-card">
+              <div class="snip-prev dark"><span class="typ-mini">CTA</span><span class="label-mini">SAPPHIRE Edition CTA</span></div>
+              <div class="snip-info"><b>SAPPHIRE Edition CTA</b><div class="desc">Dark teal CTA with primary + secondary action. Pinned to SAPPHIRE campaign through June 14.</div></div>
+              <div class="snip-meta"><span class="used"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M21 11.5a8.5 8.5 0 1 1-17 0 8.5 8.5 0 0 1 17 0z"/><path d="M12 8v4l3 2"/></svg> Used on 3</span><span>Edited 2h · JP</span></div>
+            </div>
+            <div class="snip-card">
+              <div class="snip-prev"><span class="typ-mini">Footer</span><span class="label-mini">Global footer · UST</span></div>
+              <div class="snip-info"><b>Global footer</b><div class="desc">4-column footer with quick-links, brand, legal links and meta row. Auto-updates copyright year.</div></div>
+              <div class="snip-meta"><span class="used"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="9"/></svg> Used on 11</span><span>Edited 5d · MJ</span></div>
+            </div>
+            <div class="snip-card">
+              <div class="snip-prev"><span class="typ-mini">Banner</span><span class="label-mini">Maintenance window · Sun 02:00 UTC</span></div>
+              <div class="snip-info"><b>Maintenance banner</b><div class="desc">Dismissible amber banner with scheduled visibility window. Targets Ops + Developers lanes.</div></div>
+              <div class="snip-meta"><span class="used"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="9"/></svg> Used on 1</span><span>Edited 8d · AB</span></div>
+            </div>
+            <div class="snip-card">
+              <div class="snip-prev"><span class="typ-mini">Legal</span><span class="label-mini">No SAP endorsement notice</span></div>
+              <div class="snip-info"><b>No-endorsement notice</b><div class="desc">"UST AI Suite+ for SAP brings together…" — the approved positioning paragraph. Required on every capability page.</div></div>
+              <div class="snip-meta"><span class="used"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="9"/></svg> Used on 9</span><span>Edited 6w · Legal</span></div>
+            </div>
+            <div class="snip-card">
+              <div class="snip-prev"><span class="typ-mini">CTA</span><span class="label-mini">Talk to UST SAP team</span></div>
+              <div class="snip-info"><b>Talk to UST SAP team</b><div class="desc">Lightweight CTA card linking to the contact route. Used in capability page sidebars.</div></div>
+              <div class="snip-meta"><span class="used"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="9"/></svg> Used on 5</span><span>Edited 12d · JP</span></div>
+            </div>
+            <div class="snip-card">
+              <div class="snip-prev"><span class="typ-mini">Disclaimer</span><span class="label-mini">Demo data notice</span></div>
+              <div class="snip-info"><b>Demo data notice</b><div class="desc">Inline disclaimer reminding viewers that demo data is illustrative. Auto-injected on demo-status capability pages.</div></div>
+              <div class="snip-meta"><span class="used"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="9"/></svg> Used on 4</span><span>Edited 4w · MJ</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ╔════ SCREEN 5 · Schedule & Calendar ════╗ -->
+<section class="screen" id="s5">
+  <div class="screen-frame">
+    <div class="screen-label">
+      <div class="screen-label-title"><span class="num">05</span><b>Schedule &amp; Calendar</b><span>· publish-at / unpublish-at · campaign view</span><span class="new-badge">NEW</span></div>
+      <span class="meta">Route · /admin/schedule</span>
+    </div>
+    <div class="app">
+      <aside class="rail">
+        <div class="rail-brand"><div class="rail-mark"><span>U</span><span class="rail-mark-dot"></span><span>S</span><span>T</span></div><div class="rail-brand-copy"><b>Suite+ Admin</b><span>Configure</span></div></div>
+        <div class="rail-search"><input placeholder="Search…" /><kbd>⌘K</kbd></div>
+        <nav class="rail-nav">
+          <div class="rail-item">Overview</div>
+          <div class="rail-section"><div class="rail-section-title">Configure</div>
+            <div class="rail-item">Site Composer</div>
+            <div class="rail-item">Capabilities <span class="count">8</span></div>
+            <div class="rail-item">Snippets <span class="count">11</span></div>
+            <div class="rail-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Schedule <span class="count">4</span></div>
+            <div class="rail-item">Redirects &amp; SEO</div>
+          </div>
+        </nav>
+        <div class="rail-foot"><div class="avatar">JP</div><div class="id"><b>John Patrick</b><span>UST SAP GTM</span></div><span class="role-chip">Suite Admin</span></div>
+      </aside>
+      <div class="work">
+        <div class="topbar">
+          <div class="breadcrumb"><b>Schedule</b><span style="margin-left:8px;font-size:11px;background:#FFF1DD;color:#8E520E;padding:3px 8px;border-radius:999px;font-weight:800;text-transform:uppercase;letter-spacing:.06em">4 upcoming</span></div>
+          <div class="top-right"><div class="env-switcher"><span class="env-dot"></span> Production<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></div><div class="top-avatar">JP</div></div>
+        </div>
+        <div class="actionbar">
+          <div class="actionbar-l"><h1>Schedule</h1><p>Plan publishes and unpublishes across the site. Bind snippets, banners, and tile visibility to campaign windows. Approvals still apply — schedule fires the publish; dual-control is required up-front.</p></div>
+          <div class="actionbar-r">
+            <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg> Schedule action</button>
+            <button class="btn primary">Calendar view<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg></button>
+          </div>
+        </div>
+        <div class="content">
+          <div style="display:grid;grid-template-columns:2fr 1fr;gap:18px">
+            <div>
+              <div style="background:#fff;border:1px solid rgba(13,53,60,.08);border-radius:14px;box-shadow:var(--shadow-card);padding:14px 18px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+                <div style="display:flex;align-items:center;gap:14px">
+                  <button class="btn ghost" style="padding:6px 10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg></button>
+                  <b style="font-size:18px;color:var(--ust-deep);font-weight:800;letter-spacing:-.02em">June 2026</b>
+                  <button class="btn ghost" style="padding:6px 10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></button>
+                  <button class="btn" style="padding:6px 12px;font-size:12px">Today</button>
+                </div>
+                <div class="filters">
+                  <span class="chip active">All actions</span><span class="chip">Publish</span><span class="chip">Unpublish</span><span class="chip">Expire</span>
+                </div>
+              </div>
+              <div class="cal-grid">
+                <div class="cal-h">Mon</div><div class="cal-h">Tue</div><div class="cal-h">Wed</div><div class="cal-h">Thu</div><div class="cal-h">Fri</div><div class="cal-h">Sat</div><div class="cal-h">Sun</div>
+                <div class="cal-cell dim"><span class="d">26</span></div><div class="cal-cell dim"><span class="d">27</span></div><div class="cal-cell dim"><span class="d">28</span></div><div class="cal-cell dim"><span class="d">29</span></div><div class="cal-cell dim"><span class="d">30</span></div><div class="cal-cell dim"><span class="d">31</span></div><div class="cal-cell"><span class="d">1</span></div>
+                <div class="cal-cell"><span class="d">2</span></div><div class="cal-cell"><span class="d">3</span></div><div class="cal-cell"><span class="d">4</span></div><div class="cal-cell today"><span class="d">5</span><span class="cal-evt draft">Draft v48 saved</span></div><div class="cal-cell"><span class="d">6</span></div><div class="cal-cell"><span class="d">7</span></div><div class="cal-cell"><span class="d">8</span></div>
+                <div class="cal-cell"><span class="d">9</span><span class="cal-evt pub">▶ SAPPHIRE CTA · 09:00</span></div><div class="cal-cell"><span class="d">10</span></div><div class="cal-cell"><span class="d">11</span></div><div class="cal-cell"><span class="d">12</span></div><div class="cal-cell"><span class="d">13</span></div><div class="cal-cell"><span class="d">14</span><span class="cal-evt unpub">▣ SAPPHIRE CTA · 23:59</span></div><div class="cal-cell"><span class="d">15</span></div>
+                <div class="cal-cell"><span class="d">16</span></div><div class="cal-cell"><span class="d">17</span></div><div class="cal-cell"><span class="d">18</span></div><div class="cal-cell"><span class="d">19</span></div><div class="cal-cell"><span class="d">20</span></div><div class="cal-cell"><span class="d">21</span></div><div class="cal-cell"><span class="d">22</span><span class="cal-evt exp">⚠ webhook secret expires</span></div>
+                <div class="cal-cell"><span class="d">23</span></div><div class="cal-cell"><span class="d">24</span></div><div class="cal-cell"><span class="d">25</span></div><div class="cal-cell"><span class="d">26</span></div><div class="cal-cell"><span class="d">27</span></div><div class="cal-cell"><span class="d">28</span><span class="cal-evt pub">▶ CX Insurance · v3.2</span></div><div class="cal-cell"><span class="d">29</span></div>
+                <div class="cal-cell"><span class="d">30</span></div><div class="cal-cell dim"><span class="d">1</span></div><div class="cal-cell dim"><span class="d">2</span></div><div class="cal-cell dim"><span class="d">3</span></div><div class="cal-cell dim"><span class="d">4</span></div><div class="cal-cell dim"><span class="d">5</span></div><div class="cal-cell dim"><span class="d">6</span></div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <div class="card">
+                <div class="card-h"><h3>Upcoming · next 14d</h3><span class="meta">4 actions</span></div>
+                <div class="card-b" style="padding:0">
+                  <div style="padding:14px 18px;border-bottom:1px solid rgba(13,53,60,.06)">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span class="cal-evt pub">PUBLISH</span><span style="font-size:11.5px;color:#7F8B92;font-variant-numeric:tabular-nums">Mon Jun 9 · 09:00 ET</span></div>
+                    <div style="font-size:13.5px;color:var(--ust-deep);font-weight:700;letter-spacing:-.01em">SAPPHIRE Edition CTA · Landing</div>
+                    <div style="font-size:12px;color:#52646C;margin-top:4px">Approved by Mohamed J. · auto-fires on schedule</div>
+                  </div>
+                  <div style="padding:14px 18px;border-bottom:1px solid rgba(13,53,60,.06)">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span class="cal-evt unpub">UNPUBLISH</span><span style="font-size:11.5px;color:#7F8B92;font-variant-numeric:tabular-nums">Sat Jun 14 · 23:59 ET</span></div>
+                    <div style="font-size:13.5px;color:var(--ust-deep);font-weight:700;letter-spacing:-.01em">SAPPHIRE Edition CTA · auto-remove</div>
+                    <div style="font-size:12px;color:#52646C;margin-top:4px">Paired with the Mon publish · same approval</div>
+                  </div>
+                  <div style="padding:14px 18px;border-bottom:1px solid rgba(13,53,60,.06)">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span class="cal-evt exp">EXPIRE</span><span style="font-size:11.5px;color:#7F8B92;font-variant-numeric:tabular-nums">Sun Jun 22 · 00:00 UTC</span></div>
+                    <div style="font-size:13.5px;color:var(--ust-deep);font-weight:700;letter-spacing:-.01em">Webhook secret tile.published</div>
+                    <div style="font-size:12px;color:#52646C;margin-top:4px">Plan rotation · creates an approval</div>
+                  </div>
+                  <div style="padding:14px 18px">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span class="cal-evt pub">PUBLISH</span><span style="font-size:11.5px;color:#7F8B92;font-variant-numeric:tabular-nums">Sat Jun 28 · 11:00 ET</span></div>
+                    <div style="font-size:13.5px;color:var(--ust-deep);font-weight:700;letter-spacing:-.01em">CX for Insurance · v3.2 capability rollout</div>
+                    <div style="font-size:12px;color:#52646C;margin-top:4px">Awaiting approver assignment</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ╔════ SCREEN 6 · Redirects + SEO Hub ════╗ -->
+<section class="screen" id="s6">
+  <div class="screen-frame">
+    <div class="screen-label">
+      <div class="screen-label-title"><span class="num">06</span><b>Redirects + SEO Hub</b><span>· 301/302 · CSV import · per-page metadata · OG preview · sitemap</span></div>
+      <span class="meta">Route · /admin/site/seo</span>
+    </div>
+    <div class="app">
+      <aside class="rail">
+        <div class="rail-brand"><div class="rail-mark"><span>U</span><span class="rail-mark-dot"></span><span>S</span><span>T</span></div><div class="rail-brand-copy"><b>Suite+ Admin</b><span>Site Composer</span></div></div>
+        <div class="rail-search"><input placeholder="Search…" /><kbd>⌘K</kbd></div>
+        <nav class="rail-nav">
+          <div class="rail-item">Overview</div>
+          <div class="rail-section"><div class="rail-section-title">Configure</div>
+            <div class="rail-item active">Site Composer</div>
+            <div class="rail-sub"><a>Landing page</a><a>Capability tiles</a><a>Lanes</a><a>Snippets</a><a class="active">Redirects &amp; SEO</a></div>
+            <div class="rail-item">Capabilities <span class="count">8</span></div>
+          </div>
+        </nav>
+        <div class="rail-foot"><div class="avatar">JP</div><div class="id"><b>John Patrick</b><span>UST SAP GTM</span></div><span class="role-chip">Suite Admin</span></div>
+      </aside>
+      <div class="work">
+        <div class="topbar"><div class="breadcrumb"><span>Site Composer</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round"/></svg><b>Redirects &amp; SEO</b></div><div class="top-right"><div class="env-switcher"><span class="env-dot"></span> Production<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></div><div class="top-avatar">JP</div></div></div>
+        <div class="actionbar">
+          <div class="actionbar-l"><h1>Redirects &amp; SEO</h1><p>301/302 rules, per-page metadata, OpenGraph preview, sitemap status. Bulk import via CSV.</p></div>
+          <div class="actionbar-r"><button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke-linecap="round"/></svg> Import CSV</button><button class="btn primary">Add redirect<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg></button></div>
+        </div>
+        <div class="content" style="display:grid;grid-template-columns:1.4fr 1fr;gap:18px">
+          <div class="card">
+            <div class="card-h"><h3>Redirects · 14 active</h3><span class="meta">7d traffic: 412 hits</span></div>
+            <div class="table-tools"><div class="filters"><span class="chip active">All <b style="color:var(--ust-dark);font-weight:800">14</b></span><span class="chip">301 · permanent</span><span class="chip">302 · temporary</span><span class="chip">Disabled</span></div></div>
+            <table class="tbl"><thead><tr><th>Source</th><th>Target</th><th>Type</th><th>Hits 7d</th><th>Last hit</th><th></th></tr></thead><tbody>
+              <tr><td><code>/ria/assessment</code></td><td><code>/capability/ria/assessment</code></td><td><span class="status-pill st-live">301</span></td><td>286</td><td class="last">2m ago</td><td style="text-align:right"><button class="btn ghost" style="padding:4px 8px;font-size:11px">Edit</button></td></tr>
+              <tr><td><code>/sapphire-2026</code></td><td><code>/?utm_source=sapphire&amp;lane=industry</code></td><td><span class="status-pill st-demo">302</span></td><td>62</td><td class="last">14m ago</td><td style="text-align:right"><button class="btn ghost" style="padding:4px 8px;font-size:11px">Edit</button></td></tr>
+              <tr><td><code>/old-tpo</code></td><td><code>/capability/trade-promotion-optimizer</code></td><td><span class="status-pill st-live">301</span></td><td>34</td><td class="last">1h ago</td><td style="text-align:right"><button class="btn ghost" style="padding:4px 8px;font-size:11px">Edit</button></td></tr>
+              <tr><td><code>/flexiom-launch</code></td><td><code>/capability/flexiom</code></td><td><span class="status-pill st-live">301</span></td><td>18</td><td class="last">3h ago</td><td style="text-align:right"><button class="btn ghost" style="padding:4px 8px;font-size:11px">Edit</button></td></tr>
+              <tr><td><code>/cx-ls-demo</code></td><td><code>/capability/cx-life-sciences?mode=demo</code></td><td><span class="status-pill st-demo">302</span></td><td>9</td><td class="last">Yesterday</td><td style="text-align:right"><button class="btn ghost" style="padding:4px 8px;font-size:11px">Edit</button></td></tr>
+              <tr><td><code>/ria-legacy/*</code></td><td><code>/capability/ria/$1</code></td><td><span class="status-pill st-live">301 (regex)</span></td><td>3</td><td class="last">2d ago</td><td style="text-align:right"><button class="btn ghost" style="padding:4px 8px;font-size:11px">Edit</button></td></tr>
+            </tbody></table>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:18px">
+            <div class="card">
+              <div class="card-h"><h3>Site SEO defaults</h3><span class="meta">applies unless overridden per page</span></div>
+              <div class="card-b" style="display:flex;flex-direction:column;gap:14px">
+                <div class="field"><label>Title template</label><input value="{page} · UST AI Suite+ for SAP" /></div>
+                <div class="field"><label>Description</label><textarea>UST AI Suite+ for SAP brings together AI-enabled accelerators, SAP-focused solution assets, value tools, industry demos, and practical enablement capabilities.</textarea></div>
+                <div class="field"><label>Canonical host</label><input value="https://ust-ai-suite-plus-sap.cfapps.us10-001.hana.ondemand.com" /></div>
+                <div class="field row"><label class="toggle"><input type="checkbox" checked /><span class="sw"></span> Sitemap.xml</label><label class="toggle"><input type="checkbox" checked /><span class="sw"></span> Robots: index</label></div>
+                <div style="font-size:11.5px;color:#7F8B92;padding:8px 10px;background:#F4FAFB;border:1px solid rgba(13,53,60,.08);border-radius:8px"><b style="color:var(--ust-deep)">Sitemap status</b> · 18 URLs · last regenerated 6m ago · submitted ✓</div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-h"><h3>OpenGraph preview</h3><span class="meta">how the homepage unfurls</span></div>
+              <div class="card-b">
+                <div style="background:#F4FAFB;border:1px solid rgba(13,53,60,.10);border-radius:10px;overflow:hidden">
+                  <div style="height:96px;background:linear-gradient(135deg,#0B3B42 0%,#07191E 100%);display:grid;place-items:center;color:#8DE0E7;font-weight:800;letter-spacing:-.02em;font-size:18px;position:relative">UST AI Suite+ for SAP<svg style="position:absolute;left:18px;bottom:10px;opacity:.55" width="38" height="14" viewBox="0 0 80 30"><text x="0" y="20" fill="#FFFFFF" font-family="Inter" font-weight="900" font-size="20" letter-spacing="2">U·ST</text></svg></div>
+                  <div style="padding:10px 12px"><div style="font-size:10px;color:#7F8B92;text-transform:uppercase;letter-spacing:.10em;font-weight:700">ust-ai-suite-plus-sap.cfapps.us10-001.hana.ondemand.com</div><div style="font-size:13.5px;font-weight:700;color:var(--ust-deep);margin-top:4px">UST AI Suite+ for SAP</div><div style="font-size:12px;color:#52646C;margin-top:2px;line-height:1.4">UST AI Suite+ for SAP brings together AI-enabled accelerators, SAP-focused solution assets…</div></div>
+                </div>
+                <div style="font-size:11.5px;color:#7F8B92;margin-top:10px">Preview shows Google · LinkedIn · Slack unfurl with current defaults. Per-page overrides live in the Composer (SEO tab).</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ╔════ SCREEN 7 · Site Health & Broken Links ════╗ -->
+<section class="screen" id="s7">
+  <div class="screen-frame">
+    <div class="screen-label">
+      <div class="screen-label-title"><span class="num">07</span><b>Site Health &amp; Broken Links</b><span>· per-tile manifest probe · last-known-good · per-tile rollback</span></div>
+      <span class="meta">Route · /admin/health</span>
+    </div>
+    <div class="app">
+      <aside class="rail">
+        <div class="rail-brand"><div class="rail-mark"><span>U</span><span class="rail-mark-dot"></span><span>S</span><span>T</span></div><div class="rail-brand-copy"><b>Suite+ Admin</b><span>Operate</span></div></div>
+        <div class="rail-search"><input placeholder="Search…" /><kbd>⌘K</kbd></div>
+        <nav class="rail-nav">
+          <div class="rail-item">Overview</div>
+          <div class="rail-section"><div class="rail-section-title">Operate</div>
+            <div class="rail-item">Approvals Inbox <span class="count">3</span></div>
+            <div class="rail-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v6l4 2" stroke-linecap="round"/></svg>Site Health <span class="count" style="background:#FFE0E0;color:#9A1F2B">2</span></div>
+            <div class="rail-item">Preview-as-Role</div>
+            <div class="rail-item">SCIM Sync <span class="count" style="background:#FFF1DD;color:#8E520E">1</span></div>
+          </div>
+        </nav>
+        <div class="rail-foot"><div class="avatar">JP</div><div class="id"><b>John Patrick</b><span>UST SAP GTM</span></div><span class="role-chip">Suite Admin</span></div>
+      </aside>
+      <div class="work">
+        <div class="topbar"><div class="breadcrumb"><span>Operate</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round"/></svg><b>Site Health</b><span style="margin-left:8px;font-size:11px;background:#FFE0E0;color:#9A1F2B;padding:3px 8px;border-radius:999px;font-weight:800;text-transform:uppercase;letter-spacing:.06em">2 capabilities degraded</span></div><div class="top-right"><div class="env-switcher"><span class="env-dot"></span> Production<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></div><div class="top-avatar">JP</div></div></div>
+        <div class="actionbar">
+          <div class="actionbar-l"><h1>Site Health</h1><p>Live view of every tile's manifest, route, and last-known-good state. Click a row to deep-dive. Each tile can be rolled back independently of the global site config.</p></div>
+          <div class="actionbar-r"><button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 12a9 9 0 0 1-15 6.7L3 16"/></svg> Re-probe all</button><button class="btn primary">Preview portal as · Viewer<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+        </div>
+        <div class="content">
+          <div class="kpi-row">
+            <div class="kpi"><span class="lbl">Tiles healthy</span><b>6 / 8</b><div class="trend up"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12l5 5L20 7" stroke-linecap="round"/></svg> 75% uptime</div></div>
+            <div class="kpi"><span class="lbl">Broken deep-links</span><b style="color:#9A1F2B">3</b><div class="trend flat" style="color:#9A1F2B">Across 2 tiles</div></div>
+            <div class="kpi"><span class="lbl">Manifest probes / hr</span><b>96</b><div class="trend up">Every 7m</div></div>
+            <div class="kpi"><span class="lbl">Avg p95 latency</span><b>1.8s</b><div class="trend up">↓ 14% vs 7d</div></div>
+          </div>
+          <div class="card" style="margin-top:18px">
+            <div class="card-h"><h3>Tiles · live status</h3><span class="meta">last probe 38s ago</span></div>
+            <table class="tbl" style="margin:0">
+              <thead><tr><th>Tile</th><th>Manifest</th><th>Destination</th><th>Route resolves</th><th>p95</th><th>Last good</th><th></th></tr></thead>
+              <tbody>
+                <tr style="background:#FEF4F5"><td><span class="tile-ico" style="background:#FFE0E0;border-color:#9A1F2B;color:#9A1F2B"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M5 5l14 14"/></svg></span><span class="name"><b>FlexIOM</b><span>SAP accelerator</span></span></td><td><span class="status-pill st-danger">5xx · 12m</span></td><td><code>flexiom-prod</code></td><td><span style="color:#9A1F2B;font-weight:700">✗ No</span></td><td style="color:#9A1F2B;font-weight:700">timeout</td><td class="last">09:14</td><td style="text-align:right"><button class="btn" style="padding:6px 12px;font-size:12px">Investigate</button> <button class="btn" style="padding:6px 12px;font-size:12px">Rollback tile</button></td></tr>
+                <tr style="background:#FFF8EC"><td><span class="tile-ico" style="background:#FFF1DD;border-color:#D8930A;color:#8E520E"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg></span><span class="name"><b>CX for Insurance</b><span>Industry</span></span></td><td><span class="status-pill" style="background:#FFF1DD;color:#8E520E">Slow</span></td><td><code>cx-ins-prod</code></td><td>✓ Yes</td><td style="color:#8E520E;font-weight:700">4.2s</td><td class="last">14:08</td><td style="text-align:right"><button class="btn" style="padding:6px 12px;font-size:12px">Investigate</button></td></tr>
+                <tr><td><span class="tile-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l5 5L20 7"/></svg></span><span class="name"><b>RIA</b><span>Rapid Impact Analyzer</span></span></td><td><span class="status-pill st-live">Healthy</span></td><td><code>ria-prod</code></td><td>✓ Yes</td><td>0.6s</td><td class="last">now</td><td style="text-align:right"><button class="btn ghost" style="padding:6px 12px;font-size:12px">Test deep-link</button></td></tr>
+                <tr><td><span class="tile-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l5 5L20 7"/></svg></span><span class="name"><b>Client University</b><span>Enablement</span></span></td><td><span class="status-pill st-live">Healthy</span></td><td><code>cu-prod</code></td><td>✓ Yes</td><td>0.9s</td><td class="last">now</td><td></td></tr>
+                <tr><td><span class="tile-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l5 5L20 7"/></svg></span><span class="name"><b>Rapid Assessment</b><span>Accelerator</span></span></td><td><span class="status-pill st-live">Healthy</span></td><td><code>ra-prod</code></td><td>✓ Yes</td><td>1.1s</td><td class="last">now</td><td></td></tr>
+                <tr><td><span class="tile-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l5 5L20 7"/></svg></span><span class="name"><b>ROI Calculator</b><span>Calculator</span></span></td><td><span class="status-pill st-live">Healthy</span></td><td><code>roi-prod</code></td><td>✓ Yes</td><td>0.4s</td><td class="last">now</td><td></td></tr>
+                <tr><td><span class="tile-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l5 5L20 7"/></svg></span><span class="name"><b>Trade Promotion Optimizer</b><span>Industry</span></span></td><td><span class="status-pill st-live">Healthy</span></td><td><code>tpo-prod</code></td><td>✓ Yes</td><td>1.4s</td><td class="last">now</td><td></td></tr>
+                <tr><td><span class="tile-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l5 5L20 7"/></svg></span><span class="name"><b>CX for Life Sciences</b><span>Industry</span></span></td><td><span class="status-pill st-live">Healthy</span></td><td><code>cx-ls-prod</code></td><td>✓ Yes</td><td>1.2s</td><td class="last">now</td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ╔════ SCREEN 8 · Preview-as-Role ════╗ -->
+<section class="screen" id="s8">
+  <div class="screen-frame">
+    <div class="screen-label">
+      <div class="screen-label-title"><span class="num">08</span><b>Preview-as-Role</b><span>· render the portal as a target IAS group or role · the missing "Login-As" control</span><span class="new-badge">NEW</span></div>
+      <span class="meta">Route · /admin/preview-as</span>
+    </div>
+    <div class="app">
+      <aside class="rail">
+        <div class="rail-brand"><div class="rail-mark"><span>U</span><span class="rail-mark-dot"></span><span>S</span><span>T</span></div><div class="rail-brand-copy"><b>Suite+ Admin</b><span>Operate</span></div></div>
+        <div class="rail-search"><input placeholder="Search…" /><kbd>⌘K</kbd></div>
+        <nav class="rail-nav">
+          <div class="rail-item">Overview</div>
+          <div class="rail-section"><div class="rail-section-title">Operate</div>
+            <div class="rail-item">Approvals Inbox <span class="count">3</span></div>
+            <div class="rail-item">Site Health <span class="count" style="background:#FFE0E0;color:#9A1F2B">2</span></div>
+            <div class="rail-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>Preview-as-Role</div>
+            <div class="rail-item">SCIM Sync <span class="count" style="background:#FFF1DD;color:#8E520E">1</span></div>
+          </div>
+        </nav>
+        <div class="rail-foot"><div class="avatar">JP</div><div class="id"><b>John Patrick</b><span>UST SAP GTM</span></div><span class="role-chip">Suite Admin</span></div>
+      </aside>
+      <div class="work">
+        <div class="topbar"><div class="breadcrumb"><span>Operate</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round"/></svg><b>Preview-as-Role</b><span style="margin-left:8px;font-size:11px;background:rgba(126,33,116,.14);color:#7E2174;padding:3px 8px;border-radius:999px;font-weight:800;text-transform:uppercase;letter-spacing:.06em">Impersonation mode · audited</span></div><div class="top-right"><div class="env-switcher"><span class="env-dot"></span> Production<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></div><div class="top-avatar">JP</div></div></div>
+        <div class="actionbar">
+          <div class="actionbar-l"><h1>Preview as a role</h1><p>See the public portal exactly as the target role would. Every render is audited as <code style="font-family:ui-monospace,monospace;font-size:12px">preview.as_role</code>. The view shows which blocks change visibility vs. the default Viewer baseline.</p></div>
+          <div class="actionbar-r"><button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l9 6 9-6M3 8v10h18V8"/></svg> Share read-only link</button><button class="btn primary">Capture screenshot<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 7h4l2-3h4l2 3h4v13H4z"/><circle cx="12" cy="13" r="4"/></svg></button></div>
+        </div>
+        <div class="content">
+          <div class="card" style="margin-bottom:18px">
+            <div class="role-picker">
+              <span class="rp"><span class="dot"></span> Viewer (default)</span>
+              <span class="rp"><span class="dot"></span> Suite Admin</span>
+              <span class="rp"><span class="dot"></span> Content Admin</span>
+              <span class="rp on"><span class="dot"></span> Capability Owner · RIA</span>
+              <span class="rp"><span class="dot"></span> Capability Owner · FlexIOM</span>
+              <span class="rp"><span class="dot"></span> Auditor</span>
+              <span class="rp"><span class="dot"></span> Anonymous</span>
+              <span style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#52646C;font-weight:600">or IAS group: <select style="font:inherit;font-size:12.5px;background:#F4FAFB;border:1px solid rgba(13,53,60,.10);border-radius:8px;padding:6px 10px;color:var(--ust-deep)"><option>ust-ria-leads</option><option>ust-sap-gtm</option><option>ust-cx-ls-leads</option></select></span>
+            </div>
+            <div class="card-b" style="padding:0">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:0">
+                <div style="border-right:1px solid rgba(13,53,60,.06)">
+                  <div class="pp-top" style="border-radius:0;border-top:0">
+                    <div class="pp-top-l"><span class="pp-readonly" style="background:#EEF1F4;color:#3F4F58">Default · Viewer</span><span style="font-size:12px;color:#52646C">baseline</span></div>
+                  </div>
+                  <div class="pp-stage" style="border-radius:0;min-height:440px">
+                    <div class="pp-frame">
+                      <div class="pp-url"><span><b>Default Viewer</b></span><code>/?role=viewer</code></div>
+                      <div class="pp-hero"><span class="eb">UST SAP capability showcase</span><h2>UST AI Suite+ for SAP</h2><p>A modern portfolio of AI-enabled accelerators…</p></div>
+                      <div class="pp-grid">
+                        <div class="pp-tile"><b>RIA</b><span>SAP change impact.</span><br><span class="bd">Live</span></div>
+                        <div class="pp-tile"><b>Client Univ.</b><span>Learning &amp; adoption.</span><br><span class="bd" style="background:#E3F0FE;color:#175AA8">Demo</span></div>
+                        <div class="pp-tile"><b>Rapid Assess</b><span>Discovery.</span><br><span class="bd" style="background:#E3F0FE;color:#175AA8">Demo</span></div>
+                        <div class="pp-tile"><b>ROI Calc</b><span>Value cases.</span><br><span class="bd" style="background:#E3F0FE;color:#175AA8">Demo</span></div>
+                      </div>
+                      <div style="padding:14px 18px;font-size:11.5px;color:#7F8B92;background:#F8FBFC">Role-gated tiles hidden: <b>FlexIOM · Trade Promotion Optimizer</b></div>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <div class="pp-top" style="border-radius:0;border-top:0">
+                    <div class="pp-top-l"><span class="pp-readonly">Capability Owner · RIA</span><span style="font-size:12px;color:#52646C">live render</span></div>
+                    <span style="font-size:11px;color:#175AA8;background:#E3F0FE;padding:3px 9px;border-radius:999px;font-weight:800;text-transform:uppercase;letter-spacing:.05em">+3 surfaces visible vs baseline</span>
+                  </div>
+                  <div class="pp-stage" style="border-radius:0;min-height:440px">
+                    <div class="pp-frame">
+                      <div class="pp-url"><span><b>Capability Owner · RIA</b></span><code>/?role=cap-owner-ria</code></div>
+                      <div class="pp-hero" style="position:relative;outline:2px solid #175AA8;outline-offset:-2px"><span style="position:absolute;top:-12px;left:14px;font-size:9px;text-transform:uppercase;letter-spacing:.10em;font-weight:800;color:#fff;background:#175AA8;padding:3px 8px;border-radius:5px;z-index:2">Personalized</span><span class="eb">Welcome back, RIA team</span><h2>RIA Q3 release plan</h2><p>3 active drafts · 1 publish scheduled Mon</p></div>
+                      <div class="pp-grid">
+                        <div class="pp-tile" style="outline:2px solid #1B6A55;outline-offset:-2px;position:relative"><span style="position:absolute;top:-8px;right:6px;font-size:8px;font-weight:800;color:#fff;background:#1B6A55;padding:2px 6px;border-radius:4px">EDIT</span><b>RIA</b><span>Configure tile · health 100%</span><br><span class="bd">Live</span></div>
+                        <div class="pp-tile"><b>Client Univ.</b><span>Learning &amp; adoption.</span><br><span class="bd" style="background:#E3F0FE;color:#175AA8">Demo</span></div>
+                        <div class="pp-tile"><b>Rapid Assess</b><span>Discovery.</span><br><span class="bd" style="background:#E3F0FE;color:#175AA8">Demo</span></div>
+                        <div class="pp-tile"><b>ROI Calc</b><span>Value cases.</span><br><span class="bd" style="background:#E3F0FE;color:#175AA8">Demo</span></div>
+                      </div>
+                      <div style="padding:14px 18px;font-size:11.5px;color:#52646C;background:#F0FBFC;border-top:1px solid rgba(0,151,172,.18)">
+                        <b style="color:var(--ust-dark)">+3 surfaces shown vs default Viewer:</b><br>
+                        Personalized hero · Edit affordance on RIA tile · Capability admin shortcut bar (hidden in this preview)
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ╔════ SCREEN 9 · Users & Roles ════╗ -->
+<section class="screen" id="s9">
+  <div class="screen-frame">
+    <div class="screen-label">
+      <div class="screen-label-title"><span class="num">09</span><b>Users &amp; Roles</b><span>· read-only from IAS via SCIM · bulk role mapping · per-capability ACL ready</span></div>
+      <span class="meta">Route · /admin/access/users</span>
+    </div>
+    <div class="app">
+      <aside class="rail">
+        <div class="rail-brand"><div class="rail-mark"><span>U</span><span class="rail-mark-dot"></span><span>S</span><span>T</span></div><div class="rail-brand-copy"><b>Suite+ Admin</b><span>People &amp; Access</span></div></div>
+        <div class="rail-search"><input placeholder="Search…" /><kbd>⌘K</kbd></div>
+        <nav class="rail-nav">
+          <div class="rail-item">Overview</div>
+          <div class="rail-section"><div class="rail-section-title">Govern</div>
+            <div class="rail-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="9" r="3"/><circle cx="17" cy="11" r="2.4"/><path d="M3 19c0-3.3 2.7-5 6-5s6 1.7 6 5"/></svg>People &amp; Access</div>
+            <div class="rail-sub"><a class="active">Users</a><a>Groups → Roles</a><a>Roles &amp; permissions</a><a>SSO &amp; SCIM</a><a>Access requests</a></div>
+            <div class="rail-item">Audit log</div>
+          </div>
+        </nav>
+        <div class="rail-foot"><div class="avatar">JP</div><div class="id"><b>John Patrick</b><span>UST SAP GTM</span></div><span class="role-chip">Suite Admin</span></div>
+      </aside>
+      <div class="work">
+        <div class="topbar"><div class="breadcrumb"><span>People &amp; Access</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round"/></svg><b>Users</b><span style="margin-left:8px;font-size:11px;background:#E0F5EB;color:#1B6A55;padding:3px 8px;border-radius:999px;font-weight:800;text-transform:uppercase;letter-spacing:.06em">SCIM · synced 4m</span></div><div class="top-right"><div class="env-switcher"><span class="env-dot"></span> Production<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></div><div class="top-avatar">JP</div></div></div>
+        <div class="actionbar">
+          <div class="actionbar-l"><h1>Users</h1><p>Read-only view synced from SAP IAS via SCIM. Assign Suite+ roles by mapping IAS groups — never directly to users. Capability Owners scope to one app only.</p></div>
+          <div class="actionbar-r"><button class="btn">Export CSV</button><button class="btn">Invite via IAS</button><button class="btn primary">Manage role mappings<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+        </div>
+        <div class="table-wrap" style="margin:0 28px 24px">
+          <div class="bulk-action-bar"><div class="count">3 selected of 412 users</div><div class="actions"><button class="btn">Assign role…</button><button class="btn">Add to group</button><button class="btn">Deactivate…</button><button class="btn ghost">Clear</button></div></div>
+          <div class="table-tools"><div class="filters"><span class="chip active">All <b style="color:var(--ust-dark);font-weight:800">412</b></span><span class="chip">Suite Admin <b>4</b></span><span class="chip">Content Admin <b>9</b></span><span class="chip">Capability Owner <b>16</b></span><span class="chip">Auditor <b>3</b></span><span class="chip">Active</span><span class="chip">Inactive</span></div><div class="search-mini"><input placeholder="Filter by name, email, group, or role" /></div></div>
+          <table class="tbl"><thead><tr><th style="width:32px"><span class="checkbox checked"></span></th><th>User</th><th>Suite+ role</th><th>IAS groups</th><th>Status</th><th>Last active</th><th></th></tr></thead>
+            <tbody>
+              <tr class="selected"><td><span class="checkbox checked"></span></td><td><span class="avatar-sm a1">JP</span><span class="name"><b>John Patrick Galido</b><span>john.galido@ust.com</span></span></td><td><span class="role-chip r-suite">Suite Admin</span></td><td><span class="lane-chip">ust-sap-gtm</span><span class="lane-chip">ust-suite-admins</span></td><td><span class="status-pill st-live">Active</span></td><td><span class="last">Now</span></td><td></td></tr>
+              <tr class="selected"><td><span class="checkbox checked"></span></td><td><span class="avatar-sm a3">MJ</span><span class="name"><b>Mohamed Jafeen H. K.</b><span>mohamed.kabeer@ust.com</span></span></td><td><span class="role-chip r-approve">Content Approver</span></td><td><span class="lane-chip">ust-sap-content</span></td><td><span class="status-pill st-live">Active</span></td><td><span class="last">2h ago</span></td><td></td></tr>
+              <tr class="selected"><td><span class="checkbox checked"></span></td><td><span class="avatar-sm a5">PS</span><span class="name"><b>Priya Sharma</b><span>priya.sharma@ust.com</span></span></td><td><span class="role-chip r-cap">Capability Owner · RIA</span></td><td><span class="lane-chip">ust-ria-leads</span></td><td><span class="status-pill st-live">Active</span></td><td><span class="last">3h ago</span></td><td></td></tr>
+              <tr><td><span class="checkbox"></span></td><td><span class="avatar-sm a2">RK</span><span class="name"><b>Rakesh Kumar</b><span>rakesh.kumar@ust.com</span></span></td><td><span class="role-chip r-suite">Suite Admin</span></td><td><span class="lane-chip">ust-suite-admins</span><span class="lane-chip">ust-integrations</span></td><td><span class="status-pill st-live">Active</span></td><td><span class="last">5h ago</span></td><td></td></tr>
+              <tr><td><span class="checkbox"></span></td><td><span class="avatar-sm a4">AB</span><span class="name"><b>Anika Bhardwaj</b><span>anika.bhardwaj@ust.com</span></span></td><td><span class="role-chip r-content">Content Admin</span></td><td><span class="lane-chip">ust-sap-content</span></td><td><span class="status-pill st-live">Active</span></td><td><span class="last">Yesterday</span></td><td></td></tr>
+              <tr><td><span class="checkbox"></span></td><td><span class="avatar-sm a6">KB</span><span class="name"><b>Karan Bhatt</b><span>karan.bhatt@ust.com</span></span></td><td><span class="role-chip r-viewer">Viewer (pending)</span></td><td><span class="lane-chip">ust-sap-gtm</span></td><td><span class="status-pill" style="background:#FFF1DD;color:#8E520E">Awaiting access</span></td><td><span class="last">Yesterday</span></td><td></td></tr>
+              <tr><td><span class="checkbox"></span></td><td><span class="avatar-sm a7">DH</span><span class="name"><b>Deepa Hegde</b><span>deepa.hegde@ust.com</span></span></td><td><span class="role-chip r-audit">Auditor</span></td><td><span class="lane-chip">ust-grc</span></td><td><span class="status-pill st-live">Active</span></td><td><span class="last">3d ago</span></td><td></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ╔════ SCREEN 10 · SCIM Sync Errors ════╗ -->
+<section class="screen" id="s10">
+  <div class="screen-frame">
+    <div class="screen-label">
+      <div class="screen-label-title"><span class="num">10</span><b>SCIM Sync Errors</b><span>· silent IdP failures made visible · retry · suggested fixes</span><span class="new-badge">NEW</span></div>
+      <span class="meta">Route · /admin/access/scim/errors</span>
+    </div>
+    <div class="app">
+      <aside class="rail">
+        <div class="rail-brand"><div class="rail-mark"><span>U</span><span class="rail-mark-dot"></span><span>S</span><span>T</span></div><div class="rail-brand-copy"><b>Suite+ Admin</b><span>People &amp; Access</span></div></div>
+        <div class="rail-search"><input placeholder="Search…" /><kbd>⌘K</kbd></div>
+        <nav class="rail-nav">
+          <div class="rail-item">Overview</div>
+          <div class="rail-section"><div class="rail-section-title">Govern</div>
+            <div class="rail-item active">People &amp; Access</div>
+            <div class="rail-sub"><a>Users</a><a>Groups → Roles</a><a>Roles &amp; permissions</a><a class="active">SSO &amp; SCIM</a><a>Access requests</a></div>
+            <div class="rail-item">Audit log</div>
+          </div>
+        </nav>
+        <div class="rail-foot"><div class="avatar">JP</div><div class="id"><b>John Patrick</b><span>UST SAP GTM</span></div><span class="role-chip">Suite Admin</span></div>
+      </aside>
+      <div class="work">
+        <div class="topbar"><div class="breadcrumb"><span>People &amp; Access</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round"/></svg><span>SSO &amp; SCIM</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round"/></svg><b>Errors</b><span style="margin-left:8px;font-size:11px;background:#FFF1DD;color:#8E520E;padding:3px 8px;border-radius:999px;font-weight:800;text-transform:uppercase;letter-spacing:.06em">1 active · 3 resolved 24h</span></div><div class="top-right"><div class="env-switcher"><span class="env-dot"></span> Production<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></div><div class="top-avatar">JP</div></div></div>
+        <div class="actionbar">
+          <div class="actionbar-l"><h1>SCIM sync errors</h1><p>Provisioning failures from SAP IPS that the sync engine could not auto-recover. Each error is paired with a suggested fix and a retry button. Silent IdP failures are the leading cause of orphan admins and ghost users — surface them here.</p></div>
+          <div class="actionbar-r"><button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 12a9 9 0 0 1-15 6.7L3 16"/></svg> Trigger full re-sync</button><button class="btn primary">Open in IPS<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M14 3h7v7M21 3l-9 9M10 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"/></svg></button></div>
+        </div>
+        <div class="content">
+          <div class="kpi-row">
+            <div class="kpi"><span class="lbl">Active errors</span><b style="color:#8E520E">1</b><div class="trend flat" style="color:#8E520E">3 retries used</div></div>
+            <div class="kpi"><span class="lbl">Resolved 24h</span><b>3</b><div class="trend up">All auto-recovered</div></div>
+            <div class="kpi"><span class="lbl">Last good sync</span><b>04:00</b><div class="trend flat">412 users · 7 groups</div></div>
+            <div class="kpi"><span class="lbl">Next scheduled</span><b>16:00</b><div class="trend flat">Q15 cycle</div></div>
+          </div>
+
+          <div class="card" style="margin-top:18px;border-color:#ECD8A6">
+            <div class="card-h" style="background:#FFF8EC;border-bottom-color:#ECD8A6"><h3>⚠ Active error · A001</h3><span class="meta" style="color:#8E520E;font-weight:800">3 retries · since 06:08 today</span></div>
+            <div class="card-b" style="padding:18px 22px">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+                <div>
+                  <div style="font-size:11px;text-transform:uppercase;letter-spacing:.10em;color:#7F8B92;font-weight:700;margin-bottom:6px">Error</div>
+                  <div style="font-size:15px;color:var(--ust-deep);font-weight:700;letter-spacing:-.01em;margin-bottom:8px">Duplicate externalId on group <code style="font-family:ui-monospace,monospace;font-size:13px;background:#F4FAFB;padding:2px 7px;border-radius:5px">ust-fin-leads</code></div>
+                  <div style="font-size:12.5px;color:#52646C;line-height:1.55">Two IPS records claim externalId <code style="font-family:ui-monospace,monospace;font-size:11.5px;background:#F4FAFB;padding:1px 5px;border-radius:4px">grp_a72f…</code> — one synced from AD, one manually created in IAS in 2024. SCIM 2.0 cannot resolve the conflict automatically.</div>
+
+                  <div style="font-size:11px;text-transform:uppercase;letter-spacing:.10em;color:#7F8B92;font-weight:700;margin:14px 0 6px">Impact</div>
+                  <div style="font-size:12.5px;color:#52646C;line-height:1.55">6 users in <b>ust-fin-leads</b> may be missing or duplicated. Role <b>ROI Calculator · Capability Owner</b> may not resolve correctly until the conflict is cleared.</div>
+
+                  <div style="font-size:11px;text-transform:uppercase;letter-spacing:.10em;color:#7F8B92;font-weight:700;margin:14px 0 6px">Suggested fix</div>
+                  <div style="font-size:12.5px;color:#52646C;line-height:1.55">Archive the orphan IAS-created group and re-trigger a delta sync. Suite+ will reconcile role mappings automatically. <a style="color:var(--ust-dark);font-weight:700">Open IPS group editor →</a></div>
+                </div>
+                <div>
+                  <div style="font-size:11px;text-transform:uppercase;letter-spacing:.10em;color:#7F8B92;font-weight:700;margin-bottom:6px">Last failing payload</div>
+                  <div class="audit-expand" style="padding:0;background:transparent;border-bottom:0"><div class="json"><span class="k">"schemas"</span>: [<span class="s">"urn:ietf:params:scim:schemas:core:2.0:Group"</span>],
+<span class="k">"externalId"</span>:    <span class="s">"grp_a72f4b9c8e9"</span>,
+<span class="k">"displayName"</span>:   <span class="s">"ust-fin-leads"</span>,
+<span class="k">"members"</span>:       [ … 6 ],
+<span class="k">"meta"</span>: {
+  <span class="k">"resourceType"</span>: <span class="s">"Group"</span>,
+  <span class="k">"created"</span>:      <span class="s">"2024-03-08T11:02:18Z"</span>,
+  <span class="k">"lastModified"</span>: <span class="s">"2026-06-05T06:08:11Z"</span>
+}
+
+<span class="n">// IPS response: 409 Conflict — externalId already exists</span></div></div>
+                  <div style="display:flex;gap:8px;margin-top:12px">
+                    <button class="btn primary">Retry now</button>
+                    <button class="btn">Suppress 24h</button>
+                    <button class="btn ghost">View 3 prior attempts</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:18px">
+            <div class="card-h"><h3>Resolved 24h</h3><span class="meta">3 events · auto-recovered</span></div>
+            <div class="audit-event"><span class="ts">11:42 <span>today</span></span><span class="who" style="background:linear-gradient(135deg,#1B6A55,#7AD6B1)">⚙</span><span class="desc"><b>External attribute missing</b> · user <b>karan.b@ust.com</b><br><small>Retried 1× with augmented schema · resolved</small></span><span class="tags"><span class="tag sev-info">info</span><span class="tag">scim.user.fixed</span></span></div>
+            <div class="audit-event"><span class="ts">04:01 <span>today</span></span><span class="who" style="background:linear-gradient(135deg,#1B6A55,#7AD6B1)">⚙</span><span class="desc"><b>Rate-limited by IPS</b> · 30 / 30 requests · cooldown 60s<br><small>Auto-resumed · 0 records lost</small></span><span class="tags"><span class="tag sev-info">info</span><span class="tag">scim.throttle</span></span></div>
+            <div class="audit-event"><span class="ts">22:14 <span>yesterday</span></span><span class="who" style="background:linear-gradient(135deg,#1B6A55,#7AD6B1)">⚙</span><span class="desc"><b>Deactivation cascade</b> · 2 users disabled in AD<br><small>SCIM marked them inactive · role mappings revoked</small></span><span class="tags"><span class="tag sev-info">info</span><span class="tag">scim.user.deactivated</span></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ╔════ SCREEN 11 · Approvals Inbox ════╗ -->
+<section class="screen" id="s11">
+  <div class="screen-frame">
+    <div class="screen-label">
+      <div class="screen-label-title"><span class="num">11</span><b>Approvals Inbox</b><span>· dual-control queue · SLA timer · delegation · comment thread</span></div>
+      <span class="meta">Route · /admin/approvals</span>
+    </div>
+    <div class="app">
+      <aside class="rail">
+        <div class="rail-brand"><div class="rail-mark"><span>U</span><span class="rail-mark-dot"></span><span>S</span><span>T</span></div><div class="rail-brand-copy"><b>Suite+ Admin</b><span>Operate</span></div></div>
+        <div class="rail-search"><input placeholder="Search…" /><kbd>⌘K</kbd></div>
+        <nav class="rail-nav">
+          <div class="rail-item">Overview</div>
+          <div class="rail-section"><div class="rail-section-title">Operate</div>
+            <div class="rail-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 4h11l3 3v13H5z" stroke-linejoin="round"/></svg>Approvals Inbox <span class="count">3</span></div>
+            <div class="rail-item">Site Health <span class="count" style="background:#FFE0E0;color:#9A1F2B">2</span></div>
+            <div class="rail-item">Preview-as-Role</div>
+            <div class="rail-item">SCIM Sync <span class="count" style="background:#FFF1DD;color:#8E520E">1</span></div>
+          </div>
+        </nav>
+        <div class="rail-foot"><div class="avatar">JP</div><div class="id"><b>John Patrick</b><span>UST SAP GTM</span></div><span class="role-chip">Suite Admin</span></div>
+      </aside>
+      <div class="work">
+        <div class="topbar"><div class="breadcrumb"><b>Approvals Inbox</b></div><div class="top-right"><div class="env-switcher"><span class="env-dot"></span> Production<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></div><div class="top-avatar">JP</div></div></div>
+        <div class="actionbar"><div class="actionbar-l"><h1>Approvals Inbox</h1><p>Dual-controlled actions waiting on a decision. SLA breaches escalate to Super Admin automatically. Delegation rules cover PTO.</p></div><div class="actionbar-r"><button class="btn">Delegation rules</button><button class="btn primary">Bulk approve selected</button></div></div>
+        <div class="content" style="display:grid;grid-template-columns:1.4fr 1fr;gap:18px">
+          <div class="card">
+            <div class="card-h"><h3>Queue · 3 pending</h3><div style="display:flex;gap:6px"><span style="display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;border:1px solid rgba(0,151,172,.30);background:linear-gradient(135deg,#E9F8F9,#DBF1F4);font-size:12px;color:var(--ust-dark);font-weight:700">Mine <b>3</b></span><span style="display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;border:1px solid rgba(13,53,60,.10);background:#fff;font-size:12px;color:#3F4F58;font-weight:600">All open <b>9</b></span></div></div>
+            <div class="card-b" style="padding:0">
+              <div style="padding:16px 18px;background:#FEF4F5;border-left:4px solid #9A1F2B;border-bottom:1px solid rgba(154,31,43,.18)">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span class="status-pill st-danger">Past SLA · 4h</span><span style="background:rgba(0,110,116,.12);color:var(--ust-dark);font-size:11px;font-weight:800;padding:4px 10px;border-radius:999px;text-transform:uppercase;letter-spacing:.05em">Publish</span><span style="font-size:12px;color:#52646C">A-0048</span></div>
+                <div style="font-size:14.5px;color:var(--ust-deep);font-weight:700;letter-spacing:-.01em;margin-bottom:4px">Landing page v48 → Production</div>
+                <div style="font-size:13px;color:#3F4F58;margin-bottom:10px"><b>Requester</b> John P. · <b>Approver</b> Mohamed J. <span style="color:#9A1F2B;font-weight:700">(on PTO until Mon)</span> · <b>Diff</b> 4 hero edits · 1 tile reorder</div>
+                <div style="background:#fff;border:1px solid rgba(13,53,60,.10);border-radius:10px;padding:10px 12px;font-size:12.5px;color:#3F4F58;margin-bottom:10px"><b style="color:var(--ust-deep)">Justification:</b> "Updates Q3 messaging to align with SAPPHIRE narrative and corrects the deep-link template for RIA. Soft-launch Friday."</div>
+                <div style="display:flex;align-items:center;gap:8px"><button class="btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12l5 5L20 7" stroke-linecap="round" stroke-linejoin="round"/></svg> Approve &amp; publish</button><button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 5l14 14M19 5L5 19" stroke-linecap="round"/></svg> Reject</button><button class="btn ghost">View diff</button><span style="margin-left:auto;font-size:11.5px;color:#9A1F2B;font-weight:700">Escalating in 1h 52m</span></div>
+              </div>
+              <div style="padding:16px 18px;border-bottom:1px solid rgba(13,53,60,.06)">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span class="status-pill st-danger">Past SLA · 1h</span><span style="background:rgba(0,110,116,.12);color:var(--ust-dark);font-size:11px;font-weight:800;padding:4px 10px;border-radius:999px;text-transform:uppercase;letter-spacing:.05em">Role grant</span><span style="font-size:12px;color:#52646C">A-0047</span></div>
+                <div style="font-size:14.5px;color:var(--ust-deep);font-weight:700;letter-spacing:-.01em;margin-bottom:4px">Capability Owner on CX for Life Sciences</div>
+                <div style="font-size:13px;color:#3F4F58"><b>Requester</b> Priya S. · <b>Target</b> ust-cx-ls-leads (6 members) · <b>Scope</b> capability:cx-life-sciences:configure</div>
+              </div>
+              <div style="padding:16px 18px;border-bottom:1px solid rgba(13,53,60,.06)">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span class="status-pill st-avail">SLA · 22h</span><span style="background:rgba(0,110,116,.12);color:var(--ust-dark);font-size:11px;font-weight:800;padding:4px 10px;border-radius:999px;text-transform:uppercase;letter-spacing:.05em">Integration</span><span style="font-size:12px;color:#52646C">A-0046</span></div>
+                <div style="font-size:14.5px;color:var(--ust-deep);font-weight:700;letter-spacing:-.01em;margin-bottom:4px">Bind Destination · signavio-prod</div>
+                <div style="font-size:13px;color:#3F4F58"><b>Requester</b> Rakesh K. · <b>BTP Destination</b> signavio-prod (mTLS)</div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-h"><h3>A-0048 · Landing page v48</h3><span class="meta">3 comments</span></div>
+            <div class="card-b">
+              <div style="font-size:11px;color:#7F8B92;text-transform:uppercase;letter-spacing:.10em;font-weight:700;margin-bottom:8px">Activity</div>
+              <div style="display:flex;gap:10px;margin-bottom:14px"><div class="avatar-sm a1">JP</div><div style="flex:1"><div style="font-size:13px;color:var(--ust-deep)"><b>John P.</b> <span style="color:#7F8B92;font-weight:500">requested · 4h ago</span></div><div style="font-size:13px;color:#3F4F58;margin-top:2px">"Updates Q3 messaging to align with SAPPHIRE narrative and corrects the deep-link template for RIA. Soft-launch Friday."</div></div></div>
+              <div style="display:flex;gap:10px;margin-bottom:14px"><div class="avatar-sm" style="background:linear-gradient(135deg,#1B6A55,#7AD6B1)">⚙</div><div style="flex:1"><div style="font-size:13px;color:var(--ust-deep)"><b>System</b> <span style="color:#7F8B92;font-weight:500">2h ago</span></div><div style="font-size:13px;color:#3F4F58;margin-top:2px">Primary approver Mohamed J. is on PTO (returns Mon). Delegation rule <b>SAPPHIRE-launch</b> routed to John P. — but John is the requester. Re-routed to Super Admin queue with 2h SLA buffer.</div></div></div>
+              <div style="display:flex;gap:10px;margin-bottom:14px"><div class="avatar-sm a4">AB</div><div style="flex:1"><div style="font-size:13px;color:var(--ust-deep)"><b>Anika B.</b> · <span class="role-chip r-content" style="font-size:10px">Content Admin</span> <span style="color:#7F8B92;font-weight:500">1h ago</span></div><div style="font-size:13px;color:#3F4F58;margin-top:2px">"Reviewed the hero edits — copy passes Legal review (pending Mohamed's sign-off). The RIA route fix matches the manifest at /.well-known/suiteplus-capability.json (verified)."</div></div></div>
+              <div style="margin-top:14px;padding:12px;border:1px solid rgba(0,151,172,.30);background:linear-gradient(180deg,#F0FBFC,#fff);border-radius:10px">
+                <div style="display:flex;gap:10px;align-items:flex-start"><div class="avatar-sm a1" style="flex:0 0 auto">JP</div><div style="flex:1"><textarea placeholder="Add a comment, or type /approve, /reject, /delegate…" style="width:100%;border:0;outline:none;font:inherit;font-size:13px;color:var(--ust-deep);background:transparent;resize:none;min-height:42px"></textarea></div></div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px solid rgba(0,151,172,.15)"><div style="display:flex;gap:6px;font-size:11.5px;color:#7F8B92"><span>📎 Attach</span><span>·</span><span>@ Mention</span><span>·</span><span>/ Commands</span></div><button class="btn primary" style="padding:6px 12px;font-size:12px">Send</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ╔════ SCREEN 12 · Audit Log ════╗ -->
+<section class="screen" id="s12">
+  <div class="screen-frame">
+    <div class="screen-label">
+      <div class="screen-label-title"><span class="num">12</span><b>Audit log</b><span>· virtualized event stream · saved filters · NDJSON export · drill-in detail</span></div>
+      <span class="meta">Route · /admin/governance/audit</span>
+    </div>
+    <div class="app">
+      <aside class="rail">
+        <div class="rail-brand"><div class="rail-mark"><span>U</span><span class="rail-mark-dot"></span><span>S</span><span>T</span></div><div class="rail-brand-copy"><b>Suite+ Admin</b><span>Governance</span></div></div>
+        <div class="rail-search"><input placeholder="Search…" /><kbd>⌘K</kbd></div>
+        <nav class="rail-nav">
+          <div class="rail-item">Overview</div>
+          <div class="rail-section"><div class="rail-section-title">Govern</div>
+            <div class="rail-item">People &amp; Access</div>
+            <div class="rail-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h10"/></svg>Audit log</div>
+            <div class="rail-item">Governance <span class="count">3</span></div>
+          </div>
+        </nav>
+        <div class="rail-foot"><div class="avatar">JP</div><div class="id"><b>John Patrick</b><span>UST SAP GTM</span></div><span class="role-chip">Suite Admin</span></div>
+      </aside>
+      <div class="work">
+        <div class="topbar"><div class="breadcrumb"><span>Governance</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round"/></svg><b>Audit log</b></div><div class="top-right"><div class="env-switcher"><span class="env-dot"></span> Production<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></div><div class="top-avatar">JP</div></div></div>
+        <div class="actionbar"><div class="actionbar-l"><h1>Audit log</h1><p>Every state change Suite+ made. Streamed to BTP Audit Log Service. 2y hot · 7y cold retention. Signed NDJSON export. Saved filters per investigator.</p></div><div class="actionbar-r"><button class="btn">My saved filters (4)</button><button class="btn">Export NDJSON</button><button class="btn primary">Subscribe to alerts</button></div></div>
+        <div class="table-wrap" style="margin:0 28px 24px">
+          <div class="table-tools"><div class="filters"><span class="chip active">All <b style="color:var(--ust-dark);font-weight:800">2,148</b></span><span class="chip">Authz (412)</span><span class="chip">Content (87)</span><span class="chip">Integration (54)</span><span class="chip">Secret (12)</span><span class="chip">Approval (43)</span><span class="chip">Severity: warn+</span><span class="chip">Last 7d</span></div><div style="display:flex;gap:14px;font-size:12px;color:#52646C"><span><b style="color:var(--ust-deep);font-weight:700">2,148</b> events</span><span><b style="color:var(--ust-deep);font-weight:700">15</b> approvals</span><span><b style="color:var(--ust-deep);font-weight:700">2</b> alerts</span></div></div>
+          <div class="audit-event"><span class="ts">14:32:08 <span>2026-06-05</span></span><span class="who" style="background:linear-gradient(135deg,#175AA8,#53A4DD)">MJ</span><span class="desc"><b>Mohamed J.</b> <span class="verb">published</span> landing-page revision <b>v47</b><br><small>via approval #A-0042 · diff 6 blocks · bundle 7a4e…</small></span><span class="tags"><span class="tag sev-info">info</span><span class="tag">content.published</span></span></div>
+          <div class="audit-event expanded"><span class="ts">13:48:54 <span>2026-06-05</span></span><span class="who" style="background:linear-gradient(135deg,#175AA8,#53A4DD)">PS</span><span class="desc"><b>Priya S.</b> <span class="verb">granted</span> role <b>Capability Owner</b> on <b>RIA</b> to group <b>ust-ria-leads</b><br><small>step-up MFA · dual-controlled · approver: John P.</small></span><span class="tags"><span class="tag sev-warn">warn</span><span class="tag">role.granted</span></span></div>
+          <div class="audit-expand"><div class="json"><span class="k">"event_id"</span>:    <span class="s">"e_01HKXX…0042"</span>,
+<span class="k">"ts"</span>:          <span class="s">"2026-06-05T13:48:54.214Z"</span>,
+<span class="k">"actor_id"</span>:    <span class="s">"u_priya.sharma@ust.com"</span>,
+<span class="k">"actor_role"</span>:  <span class="s">"Suite Admin"</span>,
+<span class="k">"source_ip"</span>:   <span class="s">"10.42.16.88"</span>,
+<span class="k">"action"</span>:      <span class="s">"role.granted"</span>,
+<span class="k">"resource_type"</span>: <span class="s">"role_mapping"</span>,
+<span class="k">"resource_id"</span>: <span class="s">"rm_ria-leads_cap-owner"</span>,
+<span class="k">"before_hash"</span>: <span class="s">"sha256:f3a9…"</span>,
+<span class="k">"after_hash"</span>:  <span class="s">"sha256:91c2…"</span>,
+<span class="k">"approval_id"</span>: <span class="s">"a_0040"</span>,
+<span class="k">"outcome"</span>:     <span class="s">"success"</span></div><div class="row-foot"><span style="font-size:12px;color:#52646C">Approval <b style="color:var(--ust-deep)">#A-0040</b> · approved by <b>John P.</b> · justification "RIA leads need configure access for Q3"</span><button class="btn">Open in BTP Audit Log</button><button class="btn ghost">Copy event ID</button></div></div>
+          <div class="audit-event"><span class="ts">12:21:09 <span>2026-06-05</span></span><span class="who" style="background:linear-gradient(135deg,#9A1F2B,#E0793B)">RK</span><span class="desc"><b>Rakesh K.</b> <span class="verb">configured</span> Destination <b>flexiom-prod</b><br><small>dual-controlled · approver: John P. · cert rotated</small></span><span class="tags"><span class="tag sev-warn">warn</span><span class="tag">integration.configured</span></span></div>
+          <div class="audit-event"><span class="ts">10:04:11 <span>2026-06-05</span></span><span class="who" style="background:linear-gradient(135deg,#4B2C9A,#A38AE4)">AB</span><span class="desc"><b>Anika B.</b> <span class="verb">rotated</span> webhook secret · scope <b>tile.published</b><br><small>scheduled rotation · BTP Credential Store · TTL 90d</small></span><span class="tags"><span class="tag sev-info">info</span><span class="tag">secret.rotated</span></span></div>
+          <div class="audit-event"><span class="ts">09:14:38 <span>2026-06-05</span></span><span class="who">JP</span><span class="desc"><b>John P.</b> <span class="verb">created</span> draft revision <b>v48</b><br><small>3 hero edits · 1 tile reorder</small></span><span class="tags"><span class="tag sev-info">info</span><span class="tag">draft.created</span></span></div>
+          <div class="audit-event"><span class="ts">02:31:04 <span>2026-06-05</span></span><span class="who" style="background:#3F4F58">SYS</span><span class="desc"><b>System</b> <span class="verb">denied</span> login for <b>unknown@external.com</b><br><small>no IAS match · source IP 188.66.x.x · 5th attempt · rate-limited</small></span><span class="tags"><span class="tag sev-crit">critical</span><span class="tag">authn.denied</span></span></div>
+          <div class="audit-event"><span class="ts">Yesterday <span>2026-06-04</span></span><span class="who" style="background:linear-gradient(135deg,#1B6A55,#7AD6B1)">SCIM</span><span class="desc"><b>SAP IPS</b> <span class="verb">synced</span> 412 users · 7 groups<br><small>nightly · 3 deactivations · 0 new</small></span><span class="tags"><span class="tag sev-info">info</span><span class="tag">scim.sync</span></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ╔════ SCREEN 13 · Environment Diff (modal) ════╗ -->
+<section class="screen" id="s13">
+  <div class="screen-frame">
+    <div class="screen-label">
+      <div class="screen-label-title"><span class="num">13</span><b>Environment Diff (modal)</b><span>· opens on Publish to Prod · selective change publishing</span><span class="new-badge">NEW</span></div>
+      <span class="meta">Modal on /admin/site/landing → Publish</span>
+    </div>
+    <div class="modal-stage">
+      <div class="modal">
+        <div class="modal-h">
+          <div><b>Publish to Production</b><span class="sub">Draft v48 → Prod (last v47, published 2h ago by Mohamed J.)</span></div>
+          <button class="btn ghost" style="padding:6px 10px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 5l14 14M19 5L5 19" stroke-linecap="round"/></svg></button>
+        </div>
+        <div class="modal-b">
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#FFF8EC;border:1px solid #ECD8A6;border-radius:10px;font-size:13px;color:#5E3700">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 4.7l-7.6 13.1A2 2 0 0 0 4.5 21h15a2 2 0 0 0 1.8-3.2L13.7 4.7a2 2 0 0 0-3.4 0z"/></svg>
+            <b style="font-weight:800">Dual-control approval required.</b> This publish will fire only after a second approver signs off via the Approvals Inbox. Mohamed J. is on PTO — delegation routes to Super Admin.
+          </div>
+
+          <div class="diff">
+            <div class="diff-col">
+              <div class="diff-h"><span class="pill draft">DRAFT v48</span><span>4 changes · authored by John P.</span></div>
+              <div class="diff-body">
+                <div class="diff-line del"><span><span class="diff-key">hero.headline</span>: <span class="diff-val">"UST AI Suite+ for SAP"</span></span></div>
+                <div class="diff-line add"><span><span class="diff-key">hero.headline</span>: <span class="diff-val">"UST AI Suite+ for SAP · SAPPHIRE Edition"</span></span></div>
+                <div class="diff-line del"><span><span class="diff-key">tile[ria].deepLink</span>: <span class="diff-val">"/assessment"</span></span></div>
+                <div class="diff-line add"><span><span class="diff-key">tile[ria].deepLink</span>: <span class="diff-val">"/assessment/{tenantId}"</span></span></div>
+                <div class="diff-line del"><span><span class="diff-key">snippet[SAPPHIRE_CTA].schedule.start</span>: <span class="diff-val">null</span></span></div>
+                <div class="diff-line add"><span><span class="diff-key">snippet[SAPPHIRE_CTA].schedule.start</span>: <span class="diff-val">"2026-06-09T13:00:00Z"</span></span></div>
+                <div class="diff-line eq"><span><span class="diff-key">tile.order</span>: <span class="diff-val">["ria","cu","ra","roi","tpo","cx-ls","cx-ins","flexiom"]</span></span></div>
+              </div>
+            </div>
+            <div class="diff-col">
+              <div class="diff-h"><span class="pill prod">PROD v47</span><span>published 2h ago · bundle 7a4e…</span></div>
+              <div class="diff-body">
+                <div class="diff-line eq"><span><span class="diff-key">hero.eyebrow</span>: <span class="diff-val">"UST SAP capability showcase"</span></span></div>
+                <div class="diff-line eq"><span><span class="diff-key">hero.subhead</span>: <span class="diff-val">"A modern portfolio…"</span></span></div>
+                <div class="diff-line eq"><span><span class="diff-key">lanes</span>: <span class="diff-val">[ … 9 lanes ]</span></span></div>
+                <div class="diff-line eq"><span><span class="diff-key">tile[ria].destination</span>: <span class="diff-val">"ria-prod"</span></span></div>
+                <div class="diff-line eq"><span><span class="diff-key">tile[flexiom].health</span>: <span class="diff-val">"5xx · 12m"</span></span></div>
+                <div class="diff-line eq"><span><span class="diff-key">redirects.count</span>: <span class="diff-val">14</span></span></div>
+                <div class="diff-line eq"><span><span class="diff-key">snippet[Global_Footer].usedOn</span>: <span class="diff-val">11</span></span></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px">
+            <div style="background:#F4FAFB;border:1px solid rgba(13,53,60,.08);border-radius:10px;padding:12px 14px">
+              <div style="font-size:11px;text-transform:uppercase;letter-spacing:.10em;color:#7F8B92;font-weight:700;margin-bottom:8px">Include in this publish</div>
+              <label class="toggle" style="width:100%;justify-content:space-between;padding:6px 0"><span>Hero edits</span><span style="display:flex;gap:6px;align-items:center"><span style="font-size:11px;color:#1B6A55;font-weight:700">2 changes</span><input type="checkbox" checked /><span class="sw"></span></span></label>
+              <label class="toggle" style="width:100%;justify-content:space-between;padding:6px 0"><span>RIA deep-link template</span><span style="display:flex;gap:6px;align-items:center"><span style="font-size:11px;color:#1B6A55;font-weight:700">1 change</span><input type="checkbox" checked /><span class="sw"></span></span></label>
+              <label class="toggle" style="width:100%;justify-content:space-between;padding:6px 0"><span>SAPPHIRE CTA scheduling</span><span style="display:flex;gap:6px;align-items:center"><span style="font-size:11px;color:#1B6A55;font-weight:700">1 change</span><input type="checkbox" checked /><span class="sw"></span></span></label>
+            </div>
+            <div style="background:#F0FBF7;border:1px solid #C2EAD9;border-radius:10px;padding:12px 14px">
+              <div style="font-size:11px;text-transform:uppercase;letter-spacing:.10em;color:#1B6A55;font-weight:800;margin-bottom:8px">A11y &amp; safety pre-flight</div>
+              <div style="font-size:12.5px;color:#0B3B42;display:flex;align-items:center;gap:6px;padding:4px 0"><span style="color:#1B6A55;font-weight:800">✓</span> Contrast checks pass</div>
+              <div style="font-size:12.5px;color:#0B3B42;display:flex;align-items:center;gap:6px;padding:4px 0"><span style="color:#1B6A55;font-weight:800">✓</span> All images have alt text</div>
+              <div style="font-size:12.5px;color:#0B3B42;display:flex;align-items:center;gap:6px;padding:4px 0"><span style="color:#1B6A55;font-weight:800">✓</span> Heading order valid</div>
+              <div style="font-size:12.5px;color:#0B3B42;display:flex;align-items:center;gap:6px;padding:4px 0"><span style="color:#1B6A55;font-weight:800">✓</span> Capability registry resolves</div>
+              <div style="font-size:12.5px;color:#0B3B42;display:flex;align-items:center;gap:6px;padding:4px 0"><span style="color:#1B6A55;font-weight:800">✓</span> No vendor names in copy</div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-foot">
+          <div style="font-size:12.5px;color:#52646C">Rollback target on failure: <b style="color:var(--ust-deep)">v47</b> · pointer flip &lt; 5s</div>
+          <div style="display:flex;gap:8px"><button class="btn ghost">Save preview link</button><button class="btn">Save draft &amp; close</button><button class="btn primary">Submit for approval &amp; publish<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="footer-note">
+  <p><b>UST AI Suite+ for SAP · Admin · V0.6 Mock (post-critique final)</b><br>
+  12 main screens + Environment Diff modal · same UST teal + black + white face as the public portal · structured Site Composer + operational screens.<br>
+  Companion plan: <code style="font-family:ui-monospace,monospace;font-size:12px;background:#fff;padding:3px 8px;border-radius:6px;border:1px solid rgba(13,53,60,.10)">docs/admin/SUITE_PLUS_ADMIN_PLAN.md</code></p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,37 @@
+**/.git
+**/.gitignore
+**/node_modules
+**/.next
+**/.turbo
+**/.DS_Store
+**/.env
+**/.env.*
+**/dist
+**/out
+**/coverage
+**/.vscode
+**/.idea
+**/*.log
+
+README.md
+docs
+source
+infra/github-actions
+.github
+
+# Never ship the local SQLite — production gets a fresh DB via migrate+seed
+apps/admin/data/*.sqlite
+apps/admin/data/*.sqlite-journal
+apps/admin/data/*.sqlite-wal
+apps/admin/data/*.sqlite-shm
+
+# Sibling apps don't belong in the admin image
+apps/portal
+apps/ria
+apps/client-university
+apps/rapid-assessment
+apps/roi-calculator
+apps/trade-promotion-optimizer
+apps/cx-life-sciences
+apps/cx-insurance
+apps/flexiom

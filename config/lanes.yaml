@@ -1,0 +1,58 @@
+# UST AI Suite+ for SAP — Audience Lane Registry
+# Source of truth for the 9-lane audience model.
+# Governed by SKILL_v2.md. Do not add new lanes without portfolio-owner approval.
+
+lanes:
+  - id: executives
+    name: AI for Executives
+    audience: CIO, CFO, COO, transformation leaders
+    purpose: Decision visibility, value, risk, and prioritization.
+    tags: [ROI Calculator, Rapid Assessment]
+
+  - id: architects
+    name: AI for Architects
+    audience: Enterprise, solution, integration, data architects
+    purpose: Architecture impact, modernization options, and standards alignment.
+    tags: [RIA, Rapid Assessment]
+
+  - id: business
+    name: AI for Business
+    audience: Process owners, operations leaders, super users
+    purpose: Business process improvement and day-to-day decision support.
+    tags: [FlexIOM, Trade Promotion Optimizer]
+
+  - id: consultants
+    name: AI for Consultants
+    audience: Functional consultants, PMO, BAs, SMEs
+    purpose: Faster analysis, workshops, documentation, and delivery outputs.
+    tags: [Rapid Assessment, RIA]
+
+  - id: developers
+    name: AI for Developers
+    audience: Developers, technical leads, QA
+    purpose: Code, test, transport, object, and release quality.
+    tags: [RIA, Impact analysis]
+
+  - id: ops
+    name: AI for Ops
+    audience: AMS, ITSM, support, service owners
+    purpose: Reduce recurring work, improve support quality, and enable users.
+    tags: [Client University, RIA]
+
+  - id: governance
+    name: AI for Governance
+    audience: Risk, compliance, audit, security
+    purpose: Better control, evidence, and policy adherence.
+    tags: [RIA, Rapid Assessment]
+
+  - id: finance
+    name: AI for Finance
+    audience: CFO, finance operations, value office
+    purpose: Business case, cost, and value tracking.
+    tags: [ROI Calculator, Trade Promotion Optimizer]
+
+  - id: industry
+    name: AI for Industry / Domain
+    audience: Industry leaders and domain specialists
+    purpose: Industry-focused accelerators and solution stories by sector.
+    tags: [CX for Life Sciences, CX for Insurance, Trade Promotion Optimizer]

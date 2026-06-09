@@ -1,0 +1,17 @@
+node_modules
+.next
+.turbo
+.DS_Store
+*.log
+.env
+.env.local
+.env.*.local
+dist
+out
+.vercel
+.pnpm-store
+.pnpm-debug.log
+
+.claude/settings.local.json
+.claude/sap_pdf/
+.staging-for-ust/

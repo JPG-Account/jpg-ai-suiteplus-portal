@@ -1,0 +1,32 @@
+---
+# SAP BTP Cloud Foundry deploy descriptor · Suite+ Admin
+# Global account: UST Global Inc · Subaccount: BUILD_AI_SUBACCOUNT
+# CF org: org-build-build-ai-subaccount · CF space: code_migration_space
+# API: https://api.cf.us10-001.hana.ondemand.com
+applications:
+  - name: ust-ai-suite-plus-sap-admin
+    instances: 1
+    memory: 768M
+    disk_quota: 2G
+    stack: cflinuxfs4
+    docker:
+      image: ghcr.io/ust-account/ust-ai-suite-plus-sap-admin:latest
+    routes:
+      - route: ust-ai-suite-plus-sap-admin.cfapps.us10-001.hana.ondemand.com
+    health-check-type: http
+    health-check-http-endpoint: /api/health
+    health-check-invocation-timeout: 10
+    timeout: 120
+    # No migrate/seed command — first DB access lazy-inits the schema and
+    # seeds the Super Admin from SUPER_ADMIN_EMAIL (see lib/db/ensure-db.ts).
+    # Standalone Next runtime serves directly.
+    env:
+      NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: "1"
+      HOSTNAME: "0.0.0.0"
+      # SUPER_ADMIN_EMAIL · SUPER_ADMIN_DISPLAY_NAME · REVALIDATE_SECRET · PORTAL_BASE_URL
+      # come from CF user-provided variables (do not commit). Set with:
+      #   cf set-env ust-ai-suite-plus-sap-admin SUPER_ADMIN_EMAIL john.galido@ust.com
+      #   cf set-env ust-ai-suite-plus-sap-admin REVALIDATE_SECRET <strong-random>
+      #   cf set-env ust-ai-suite-plus-sap-admin PORTAL_BASE_URL https://ust-ai-suite-plus-sap.cfapps.us10-001.hana.ondemand.com
+      #   cf restage ust-ai-suite-plus-sap-admin

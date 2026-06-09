@@ -11,6 +11,12 @@ type Props = {
 };
 
 export function TopBar({ crumbs, pill, env = "Production" }: Props) {
+  // Public portal URL — surfaced as a "View live" launcher in the top bar so
+  // admins can jump to the deployed portal from any admin page. Server-side
+  // env read (TopBar is a server component) avoids needing NEXT_PUBLIC_*
+  // which would have to be baked in at build time.
+  const portalUrl = (process.env.PORTAL_BASE_URL ?? "").replace(/\/$/, "");
+
   return (
     <div className="topbar">
       <div className="breadcrumb">
@@ -23,6 +29,18 @@ export function TopBar({ crumbs, pill, env = "Production" }: Props) {
         {pill && <span className={`pill ${pill.tone}`}>{pill.label}</span>}
       </div>
       <div className="top-right">
+        {portalUrl && (
+          <a
+            href={portalUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn ghost sm"
+            title={`Open public portal: ${portalUrl}`}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 10px" }}
+          >
+            View live {Icon.external}
+          </a>
+        )}
         <div className={`env-switcher ${env === "Preview" ? "env-stage" : ""}`}>
           <span className="env-dot" /> {env}
           <kbd>⌘E</kbd>

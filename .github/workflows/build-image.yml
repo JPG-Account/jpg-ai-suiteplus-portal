@@ -1,0 +1,124 @@
+# Build and publish Docker images to GHCR.
+#
+# Triggers:
+#   - push to main        → build + push (tags: sha-<full>, sha-<short>, latest)
+#   - pull_request        → build only (validates Dockerfile before merge)
+#   - workflow_dispatch   → manual trigger
+#
+# Output packages (PUBLIC visibility — set manually after first push):
+#   - ghcr.io/jpg-account/ust-ai-suiteplus-portal
+#   - ghcr.io/jpg-account/ust-ai-suiteplus-portal-admin
+#
+# Image refs for `cf push --docker-image` from BAS:
+#   ghcr.io/jpg-account/ust-ai-suiteplus-portal:sha-<short-sha>
+#   ghcr.io/jpg-account/ust-ai-suiteplus-portal-admin:sha-<short-sha>
+#
+# After first successful run, set both packages to PUBLIC at:
+#   https://github.com/orgs/JPG-Account/packages
+# Click each package → Package settings → Change visibility → Public
+# (Sidesteps GitHub Free's 500MB private package storage cap.)
+
+name: build-image
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/portal/**"
+      - "apps/admin/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - ".github/workflows/build-image.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps/portal/**"
+      - "apps/admin/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - ".github/workflows/build-image.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: build-image-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  REGISTRY: ghcr.io
+  ORG: ${{ github.repository_owner }}   # JPG-Account → ghcr.io lowercases it
+
+jobs:
+  build:
+    name: Build · ${{ matrix.app.name }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        app:
+          - name: portal
+            image: ust-ai-suiteplus-portal
+            dockerfile: apps/portal/Dockerfile
+          - name: admin
+            image: ust-ai-suiteplus-portal-admin
+            dockerfile: apps/admin/Dockerfile
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract image metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.ORG }}/${{ matrix.app.image }}
+          # Lowercase ORG (GHCR rejects uppercase) handled by metadata-action automatically.
+          tags: |
+            type=sha,prefix=sha-,format=long
+            type=sha,prefix=sha-,format=short
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ matrix.app.dockerfile }}
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=${{ matrix.app.name }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.app.name }}
+          provenance: false
+
+      - name: Summary
+        run: |
+          echo "## ${{ matrix.app.name }} image" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Pushed: ${{ github.event_name != 'pull_request' }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Tags:" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.meta.outputs.tags }}" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          if [ "${{ github.event_name }}" != "pull_request" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Pull ref for \`cf push --docker-image\`:" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            echo "ghcr.io/${{ env.ORG }}/${{ matrix.app.image }}:sha-$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi

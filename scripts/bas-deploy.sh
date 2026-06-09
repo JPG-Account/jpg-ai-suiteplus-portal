@@ -122,6 +122,13 @@ cf push -f apps/portal/manifest.yml \
   --docker-image "$PORTAL_IMAGE" \
   $DOCKER_CREDS_ARGS \
   $STRATEGY
+
+# Portal needs ADMIN_BASE_URL so its server-side getRegistry() can fetch the
+# published bundle from /api/config/current. Without this, portal falls back
+# to an empty FALLBACK_BUNDLE and capability cards never render.
+cf set-env "$PORTAL_APP" ADMIN_BASE_URL "https://${ADMIN_APP}.cfapps.us10-001.hana.ondemand.com" >/dev/null
+cf restart "$PORTAL_APP" >/dev/null
+ok "Portal ADMIN_BASE_URL set + restarted"
 ok "Portal app deployed"
 
 bold "STEP 5 — Deploy ADMIN (binds $DB_SERVICE via manifest)"

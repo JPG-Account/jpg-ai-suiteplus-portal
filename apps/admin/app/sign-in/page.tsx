@@ -1,9 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function SignInPage() {
+// Force dynamic rendering — useSearchParams() bails out of static prerender
+// and would otherwise fail the production build under Next.js 14's
+// missing-suspense-with-csr-bailout check.
+export const dynamic = "force-dynamic";
+
+function SignInForm() {
   const router = useRouter();
   const params = useSearchParams();
   const [email, setEmail] = useState("");
@@ -138,5 +143,13 @@ export default function SignInPage() {
         </p>
       </form>
     </div>
+  );
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: "100vh" }} />}>
+      <SignInForm />
+    </Suspense>
   );
 }

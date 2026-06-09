@@ -86,7 +86,7 @@ export const PATCH = withSuperAdmin(async (req, ctx) => {
   const pool = await getPool();
 
   const beforeRes = await pool.query<any>("SELECT * FROM capability WHERE id = $1", [id]);
-  if (beforeRes.rowCount === 0) {
+  if ((beforeRes.rowCount ?? 0) === 0) {
     return NextResponse.json({ error: "not_found" }, { status: 404 });
   }
   const before = beforeRes.rows[0];
@@ -97,7 +97,7 @@ export const PATCH = withSuperAdmin(async (req, ctx) => {
       "SELECT id FROM capability WHERE slug = $1 AND id <> $2",
       [patch.slug, id],
     );
-    if (dup.rowCount > 0) {
+    if ((dup.rowCount ?? 0) > 0) {
       return NextResponse.json({ error: "slug_taken" }, { status: 409 });
     }
   }
@@ -190,7 +190,7 @@ export const POST = withSuperAdmin(async (req, ctx) => {
     "SELECT id FROM capability WHERE slug = $1",
     [data.slug],
   );
-  if (dup.rowCount > 0) {
+  if ((dup.rowCount ?? 0) > 0) {
     return NextResponse.json({ error: "slug_taken" }, { status: 409 });
   }
 
@@ -262,7 +262,7 @@ export const DELETE = withSuperAdmin(async (req, ctx) => {
     "SELECT id, slug, name FROM capability WHERE id = $1",
     [id],
   );
-  if (beforeRes.rowCount === 0) {
+  if ((beforeRes.rowCount ?? 0) === 0) {
     return NextResponse.json({ error: "not_found" }, { status: 404 });
   }
   const before = beforeRes.rows[0];

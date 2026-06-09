@@ -30,7 +30,7 @@ const sections: NavSection[] = [
           { href: "/site/seo", label: "Redirects & SEO" },
         ],
       },
-      { href: "/site/tiles", label: "Capabilities", icon: "capabilities", count: 8 },
+      { href: "/capabilities", label: "Capabilities", icon: "capabilities", count: 8 },
       { href: "/schedule", label: "Schedule", icon: "schedule", count: 4 },
     ],
   },

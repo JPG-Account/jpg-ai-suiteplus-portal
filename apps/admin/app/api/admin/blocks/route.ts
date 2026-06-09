@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { z } from "zod";
 import { withSuperAdmin } from "../../../../lib/auth/guard";
-import { getSqlite } from "../../../../lib/db/client";
+import { getPool } from "../../../../lib/db/client";
 import { writeAudit } from "../../../../lib/audit";
 
 export const dynamic = "force-dynamic";
@@ -9,7 +9,11 @@ export const runtime = "nodejs";
 
 export const GET = withSuperAdmin(async (req) => {
   const pageKey = new URL(req.url).searchParams.get("pageKey") ?? "home";
-  const rows = getSqlite().prepare(`SELECT * FROM page_block WHERE page_key = ? ORDER BY position`).all(pageKey) as any[];
+  const pool = await getPool();
+  const { rows } = await pool.query<any>(
+    "SELECT * FROM page_block WHERE page_key = $1 ORDER BY position",
+    [pageKey],
+  );
   return NextResponse.json({
     blocks: rows.map((b) => ({
       id: b.id,
@@ -26,7 +30,13 @@ export const GET = withSuperAdmin(async (req) => {
   });
 });
 
-function safeJson(s: string) { try { return JSON.parse(s); } catch { return {}; } }
+function safeJson(s: string) {
+  try {
+    return JSON.parse(s);
+  } catch {
+    return {};
+  }
+}
 
 const PatchBody = z.object({
   id: z.string(),
@@ -42,29 +52,50 @@ const PatchBody = z.object({
 export const PATCH = withSuperAdmin(async (req, ctx) => {
   const body = await req.json().catch(() => null);
   const parsed = PatchBody.safeParse(body);
-  if (!parsed.success) return NextResponse.json({ error: "bad_request", details: parsed.error.flatten() }, { status: 400 });
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: "bad_request", details: parsed.error.flatten() },
+      { status: 400 },
+    );
+  }
   const { id, ...patch } = parsed.data;
 
-  const db = getSqlite();
-  const before = db.prepare(`SELECT * FROM page_block WHERE id = ?`).get(id) as any;
+  const pool = await getPool();
+  const { rows: beforeRows } = await pool.query<any>(
+    "SELECT * FROM page_block WHERE id = $1",
+    [id],
+  );
+  const before = beforeRows[0];
   if (!before) return NextResponse.json({ error: "not_found" }, { status: 404 });
 
   const fields: string[] = [];
   const values: any[] = [];
-  if (patch.fields !== undefined) { fields.push("fields_json = ?"); values.push(JSON.stringify(patch.fields)); }
-  if (patch.label !== undefined) { fields.push("label = ?"); values.push(patch.label); }
-  if (patch.subtitle !== undefined) { fields.push("subtitle = ?"); values.push(patch.subtitle); }
-  if (patch.isEnabled !== undefined) { fields.push("is_enabled = ?"); values.push(patch.isEnabled ? 1 : 0); }
-  if (patch.blockType !== undefined) { fields.push("block_type = ?"); values.push(patch.blockType); }
-  if (patch.style !== undefined) { fields.push("style_json = ?"); values.push(JSON.stringify(patch.style)); }
-  if (patch.htmlPayload !== undefined) { fields.push("html_payload = ?"); values.push(patch.htmlPayload); }
+  let pos = 1;
+  const add = (col: string, val: any) => {
+    fields.push(`${col} = $${pos++}`);
+    values.push(val);
+  };
+  if (patch.fields !== undefined) add("fields_json", JSON.stringify(patch.fields));
+  if (patch.label !== undefined) add("label", patch.label);
+  if (patch.subtitle !== undefined) add("subtitle", patch.subtitle);
+  if (patch.isEnabled !== undefined) add("is_enabled", patch.isEnabled);
+  if (patch.blockType !== undefined) add("block_type", patch.blockType);
+  if (patch.style !== undefined) add("style_json", JSON.stringify(patch.style));
+  if (patch.htmlPayload !== undefined) add("html_payload", patch.htmlPayload);
 
   if (fields.length === 0) return NextResponse.json({ ok: true, unchanged: true });
 
-  db.prepare(`UPDATE page_block SET ${fields.join(", ")} WHERE id = ?`).run(...values, id);
-  const after = db.prepare(`SELECT * FROM page_block WHERE id = ?`).get(id);
+  const sql = `UPDATE page_block SET ${fields.join(", ")} WHERE id = $${pos}`;
+  values.push(id);
+  await pool.query(sql, values);
 
-  writeAudit({
+  const { rows: afterRows } = await pool.query<any>(
+    "SELECT * FROM page_block WHERE id = $1",
+    [id],
+  );
+  const after = afterRows[0];
+
+  await writeAudit({
     actorUserId: ctx.user.id,
     action: "block.updated",
     entityType: "page_block",
@@ -85,21 +116,39 @@ export const POST = withSuperAdmin(async (req, ctx) => {
   // Reorder endpoint — body: { pageKey, order: [blockId,...] }
   const body = await req.json().catch(() => null);
   const parsed = ReorderBody.safeParse(body);
-  if (!parsed.success) return NextResponse.json({ error: "bad_request", details: parsed.error.flatten() }, { status: 400 });
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: "bad_request", details: parsed.error.flatten() },
+      { status: 400 },
+    );
+  }
   const { pageKey, order } = parsed.data;
 
-  const db = getSqlite();
-  const existing = db.prepare(`SELECT id FROM page_block WHERE page_key = ?`).all(pageKey) as any[];
+  const pool = await getPool();
+  const { rows: existing } = await pool.query<any>(
+    "SELECT id FROM page_block WHERE page_key = $1",
+    [pageKey],
+  );
   const knownIds = new Set(existing.map((r) => r.id));
   if (order.some((id) => !knownIds.has(id))) {
     return NextResponse.json({ error: "unknown_block_id" }, { status: 400 });
   }
-  const txn = db.transaction((ids: string[]) => {
-    ids.forEach((id, i) => db.prepare(`UPDATE page_block SET position = ? WHERE id = ?`).run(i, id));
-  });
-  txn(order);
 
-  writeAudit({
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    for (let i = 0; i < order.length; i++) {
+      await client.query("UPDATE page_block SET position = $1 WHERE id = $2", [i, order[i]]);
+    }
+    await client.query("COMMIT");
+  } catch (e) {
+    await client.query("ROLLBACK");
+    throw e;
+  } finally {
+    client.release();
+  }
+
+  await writeAudit({
     actorUserId: ctx.user.id,
     action: "block.reordered",
     entityType: "page",

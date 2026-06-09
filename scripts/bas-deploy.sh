@@ -148,7 +148,7 @@ set_if_unset() {
   fi
 }
 
-cf set-env "$ADMIN_APP" SUPER_ADMIN_EMAIL "john.galido@ust.com"
+cf set-env "$ADMIN_APP" SUPER_ADMIN_EMAIL "johnpatrick.galido@ust.com"
 set_if_unset AUTH_PASSWORD_PEPPER "$(openssl rand -hex 32)"
 set_if_unset REVALIDATE_SECRET "$(openssl rand -hex 32)"
 cf set-env "$ADMIN_APP" PORTAL_BASE_URL "https://${PORTAL_APP}.cfapps.us10-001.hana.ondemand.com"

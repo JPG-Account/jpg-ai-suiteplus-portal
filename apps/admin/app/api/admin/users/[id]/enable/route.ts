@@ -4,7 +4,7 @@
 // if the original credential should be invalidated.
 import { NextResponse } from "next/server";
 import { withSuperAdmin } from "../../../../../../lib/auth/guard";
-import { getSqlite } from "../../../../../../lib/db/client";
+import { getPool } from "../../../../../../lib/db/client";
 import { writeAudit } from "../../../../../../lib/audit";
 
 export const dynamic = "force-dynamic";
@@ -12,17 +12,27 @@ export const runtime = "nodejs";
 
 export const POST = withSuperAdmin(async (_req, ctx) => {
   const { id } = (ctx as any).params ?? { id: "" };
-  const db = getSqlite();
-  const user = db.prepare(`SELECT * FROM user_account WHERE id = ?`).get(id) as any;
+  const pool = await getPool();
+  const userRes = await pool.query<any>(
+    "SELECT * FROM user_account WHERE id = $1",
+    [id],
+  );
+  const user = userRes.rows[0];
   if (!user) return NextResponse.json({ error: "not_found" }, { status: 404 });
   if (user.status !== "disabled") {
-    return NextResponse.json({ error: "not_disabled", message: "User is not currently disabled" }, { status: 409 });
+    return NextResponse.json(
+      { error: "not_disabled", message: "User is not currently disabled" },
+      { status: 409 },
+    );
   }
 
-  db.prepare(`UPDATE user_account SET status = 'active' WHERE id = ?`).run(id);
-  db.prepare(`UPDATE password_credential SET locked_until = NULL, failed_attempts = 0 WHERE user_id = ?`).run(id);
+  await pool.query("UPDATE user_account SET status = 'active' WHERE id = $1", [id]);
+  await pool.query(
+    "UPDATE password_credential SET locked_until = NULL, failed_attempts = 0 WHERE user_id = $1",
+    [id],
+  );
 
-  writeAudit({
+  await writeAudit({
     actorUserId: ctx.user.id,
     action: "auth.user.enabled",
     entityType: "user_account",

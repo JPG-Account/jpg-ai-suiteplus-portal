@@ -131,12 +131,26 @@ cf push -f apps/admin/manifest.yml \
   $STRATEGY
 ok "Admin app deployed and bound to Postgres"
 
-bold "STEP 6 — Set admin secrets (NEVER printed in plain text in real run)"
-# Generate strong randoms for first run; reuse the same values on re-runs.
-# If you've already set these and don't want to rotate, comment these out.
+bold "STEP 6 — Set admin secrets (idempotent: peppers only generated once)"
+# CRITICAL: AUTH_PASSWORD_PEPPER and REVALIDATE_SECRET must be STABLE across
+# deploys. Pepper is mixed into every password hash — rotate it and every
+# existing super-admin/user password becomes unverifiable.
+#
+# Generate once on first deploy; preserve on every re-run.
+set_if_unset() {
+  local var="$1"; local value="$2"
+  local existing
+  existing=$(cf env "$ADMIN_APP" 2>/dev/null | awk -v k="^${var}:" '$0 ~ k {sub(/^[^:]+: */,""); print; exit}')
+  if [ -n "$existing" ]; then
+    ok "$var already set — preserving"
+  else
+    cf set-env "$ADMIN_APP" "$var" "$value"
+  fi
+}
+
 cf set-env "$ADMIN_APP" SUPER_ADMIN_EMAIL "john.galido@ust.com"
-cf set-env "$ADMIN_APP" AUTH_PASSWORD_PEPPER "$(openssl rand -hex 32)"
-cf set-env "$ADMIN_APP" REVALIDATE_SECRET "$(openssl rand -hex 32)"
+set_if_unset AUTH_PASSWORD_PEPPER "$(openssl rand -hex 32)"
+set_if_unset REVALIDATE_SECRET "$(openssl rand -hex 32)"
 cf set-env "$ADMIN_APP" PORTAL_BASE_URL "https://${PORTAL_APP}.cfapps.us10-001.hana.ondemand.com"
 cf set-env "$ADMIN_APP" NEXT_PUBLIC_PORTAL_BASE_URL "https://${PORTAL_APP}.cfapps.us10-001.hana.ondemand.com"
 cf set-env "$ADMIN_APP" ADMIN_BASE_URL "https://${ADMIN_APP}.cfapps.us10-001.hana.ondemand.com"

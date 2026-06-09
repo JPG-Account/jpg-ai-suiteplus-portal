@@ -41,12 +41,25 @@ cf services | grep -q "^$DB_SERVICE\s" \
   || fail "Service $DB_SERVICE not found. Cannot proceed."
 
 bold "STEP 2 — Pre-flight: GHCR images are PUBLIC (anonymous pull)"
+# GHCR returns 401 on a naked manifest fetch even for public packages; the
+# correct anonymous-pull flow is /token first, then use the bearer.
+# docker pull and `cf push --docker-image` handle this dance automatically.
+ACCEPT="application/vnd.oci.image.manifest.v1+json,application/vnd.docker.distribution.manifest.v2+json,application/vnd.oci.image.index.v1+json,application/vnd.docker.distribution.manifest.list.v2+json"
 for img in "$PORTAL_IMAGE" "$ADMIN_IMAGE"; do
-  if curl -sf -o /dev/null "https://ghcr.io/v2/${img#ghcr.io/}/manifests/${IMAGE_SHA}" 2>/dev/null; then
+  # Strip ghcr.io/ prefix and :tag suffix to get the repo path for the scope.
+  repo="${img#ghcr.io/}"; repo="${repo%:*}"
+  tag="${img##*:}"
+  token=$(curl -fsS "https://ghcr.io/token?service=ghcr.io&scope=repository:${repo}:pull" 2>/dev/null | sed 's/.*"token":"\([^"]*\)".*/\1/' || true)
+  if [ -z "$token" ]; then
+    warn "$img — could not get anonymous token (package likely still private)"
+    warn "  Set packages PUBLIC at https://github.com/orgs/JPG-Account/packages"
+    exit 1
+  fi
+  code=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $token" -H "Accept: $ACCEPT" "https://ghcr.io/v2/${repo}/manifests/${tag}")
+  if [ "$code" = "200" ]; then
     ok "$img — public, pullable"
   else
-    warn "$img — 401/404. Either packages are still private OR the SHA tag doesn't exist."
-    warn "  Set packages PUBLIC at https://github.com/orgs/JPG-Account/packages"
+    warn "$img — manifest fetch HTTP $code with anonymous token (tag may not exist)"
     warn "  Confirm the build-image workflow ran for commit $IMAGE_SHA"
     exit 1
   fi

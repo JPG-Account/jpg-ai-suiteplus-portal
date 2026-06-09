@@ -1,32 +1,48 @@
 ---
-# SAP BTP Cloud Foundry deploy descriptor · Suite+ Admin
+# SAP BTP Cloud Foundry deploy descriptor — Admin
 # Global account: UST Global Inc · Subaccount: BUILD_AI_SUBACCOUNT
-# CF org: org-build-build-ai-subaccount · CF space: code_migration_space
-# API: https://api.cf.us10-001.hana.ondemand.com
+# CF org:         org-build-build-ai-subaccount
+# CF space:       code_migration_space
+# API:            https://api.cf.us10-001.hana.ondemand.com
+#
+# `services: [ust-portfolio-db]` auto-binds the existing free-plan Hyperscaler
+# Postgres at push time. The bound credentials are injected via VCAP_SERVICES
+# and parsed by lib/db/client.ts getDatabaseUrl().
+#
+# Image is overridden at deploy time via:
+#   cf push -f apps/admin/manifest.yml \
+#     --docker-image ghcr.io/jpg-account/ust-ai-suiteplus-portal-admin:sha-<digest>
+#
+# After push, set required env vars (do NOT commit secrets):
+#   cf set-env ust-ai-suiteplus-portal-admin SUPER_ADMIN_EMAIL "john.galido@ust.com"
+#   cf set-env ust-ai-suiteplus-portal-admin AUTH_PASSWORD_PEPPER "$(openssl rand -hex 32)"
+#   cf set-env ust-ai-suiteplus-portal-admin REVALIDATE_SECRET "$(openssl rand -hex 32)"
+#   cf set-env ust-ai-suiteplus-portal-admin PORTAL_BASE_URL "https://ust-ai-suiteplus-portal.cfapps.us10-001.hana.ondemand.com"
+#   cf set-env ust-ai-suiteplus-portal-admin NEXT_PUBLIC_PORTAL_BASE_URL "https://ust-ai-suiteplus-portal.cfapps.us10-001.hana.ondemand.com"
+#   cf set-env ust-ai-suiteplus-portal-admin ADMIN_BASE_URL "https://ust-ai-suiteplus-portal-admin.cfapps.us10-001.hana.ondemand.com"
+#   cf restart ust-ai-suiteplus-portal-admin
+#
+# Schema + super-admin user lazy-init on first DB-touching request
+# (see lib/db/ensure-db.ts). Watch `cf logs --recent | grep set-password`
+# for the one-shot URL to set the super-admin password.
 applications:
-  - name: ust-ai-suite-plus-sap-admin
+  - name: ust-ai-suiteplus-portal-admin
     instances: 1
-    memory: 768M
-    disk_quota: 2G
+    memory: 1G
+    disk_quota: 1G
     stack: cflinuxfs4
     docker:
-      image: ghcr.io/ust-account/ust-ai-suite-plus-sap-admin:latest
+      image: ghcr.io/jpg-account/ust-ai-suiteplus-portal-admin:latest
     routes:
-      - route: ust-ai-suite-plus-sap-admin.cfapps.us10-001.hana.ondemand.com
+      - route: ust-ai-suiteplus-portal-admin.cfapps.us10-001.hana.ondemand.com
+    services:
+      - ust-portfolio-db
     health-check-type: http
     health-check-http-endpoint: /api/health
     health-check-invocation-timeout: 10
-    timeout: 120
-    # No migrate/seed command — first DB access lazy-inits the schema and
-    # seeds the Super Admin from SUPER_ADMIN_EMAIL (see lib/db/ensure-db.ts).
-    # Standalone Next runtime serves directly.
+    timeout: 180
     env:
       NODE_ENV: production
       NEXT_TELEMETRY_DISABLED: "1"
       HOSTNAME: "0.0.0.0"
-      # SUPER_ADMIN_EMAIL · SUPER_ADMIN_DISPLAY_NAME · REVALIDATE_SECRET · PORTAL_BASE_URL
-      # come from CF user-provided variables (do not commit). Set with:
-      #   cf set-env ust-ai-suite-plus-sap-admin SUPER_ADMIN_EMAIL john.galido@ust.com
-      #   cf set-env ust-ai-suite-plus-sap-admin REVALIDATE_SECRET <strong-random>
-      #   cf set-env ust-ai-suite-plus-sap-admin PORTAL_BASE_URL https://ust-ai-suite-plus-sap.cfapps.us10-001.hana.ondemand.com
-      #   cf restage ust-ai-suite-plus-sap-admin
+      AUTH_PROVIDER: local

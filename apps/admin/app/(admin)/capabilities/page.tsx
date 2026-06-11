@@ -70,7 +70,12 @@ export default function CapabilitiesPage() {
   const [confirmDelete, setConfirmDelete] = useState<ApiCapability | null>(null);
   const { toast, ok, err } = useToast();
 
-  useEffect(() => { reload(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, []);
+  useEffect(() => {
+    reload();
+    // Deep link from the tile editor's "Register capability" button.
+    if (new URLSearchParams(window.location.search).get("new") === "1") openCreate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function reload() {
     setLoading(true);

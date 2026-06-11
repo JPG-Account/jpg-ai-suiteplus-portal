@@ -3,6 +3,7 @@
 // Screen 03 · Capability Tile Editor · BACKEND-WIRED
 // Fetches real tiles · drawer edits route kind + template · PATCH on Save.
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { TopBar, ActionBar } from "../../../../components/TopBar";
 import { Icon } from "../../../../components/Icons";
 import { ToastView, useToast } from "../../../../components/Toast";
@@ -32,7 +33,10 @@ export default function TilesPage() {
   const [saving, setSaving] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [dirtyIds, setDirtyIds] = useState<Set<string>>(new Set());
+  const [kindFilter, setKindFilter] = useState<"all" | ApiTile["routeKind"]>("all");
+  const [filterText, setFilterText] = useState("");
   const { toast, ok, err } = useToast();
+  const router = useRouter();
 
   useEffect(() => { reload(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, []);
 
@@ -154,7 +158,7 @@ export default function TilesPage() {
         title="Capability tiles"
         sub={loading ? "Loading…" : error ? `Error: ${error}` : "Each tile is bound to a registered capability + a deep-link template. Destinations resolve at click time. No raw URLs."}
         actions={<>
-          <button className="btn">{Icon.plus} Register capability</button>
+          <button className="btn" onClick={() => router.push("/capabilities?new=1")}>{Icon.plus} Register capability</button>
           <button className="btn primary" disabled={dirtyIds.size === 0 || publishing} onClick={publish}>
             {publishing ? "Publishing…" : `Publish${dirtyIds.size > 0 ? ` (${dirtyIds.size}) ` : " "}to Prod`} {Icon.arrowRight}
           </button>
@@ -165,17 +169,27 @@ export default function TilesPage() {
         <div className="table-wrap">
           <div className="table-tools">
             <div className="filters">
-              <span className="chip active">All <b>{tiles.length}</b></span>
-              <span className="chip">Internal route</span>
-              <span className="chip">External URL</span>
-              <span className="chip">Coming soon</span>
+              <button type="button" className={`chip ${kindFilter === "all" ? "active" : ""}`} onClick={() => setKindFilter("all")} style={{ border: 0, cursor: "pointer" }}>All <b>{tiles.length}</b></button>
+              <button type="button" className={`chip ${kindFilter === "internal" ? "active" : ""}`} onClick={() => setKindFilter("internal")} style={{ border: 0, cursor: "pointer" }}>Internal route</button>
+              <button type="button" className={`chip ${kindFilter === "external" ? "active" : ""}`} onClick={() => setKindFilter("external")} style={{ border: 0, cursor: "pointer" }}>External URL</button>
+              <button type="button" className={`chip ${kindFilter === "soon" ? "active" : ""}`} onClick={() => setKindFilter("soon")} style={{ border: 0, cursor: "pointer" }}>Coming soon</button>
             </div>
-            <div className="search-mini"><input placeholder="Filter by name or route" /></div>
+            <div className="search-mini"><input placeholder="Filter by name or route" value={filterText} onChange={(e) => setFilterText(e.target.value)} /></div>
           </div>
           <table className="tbl">
             <thead><tr><th>Tile</th><th>Route kind</th><th>Template</th><th>Visibility</th></tr></thead>
             <tbody>
-              {tiles.map((t) => {
+              {tiles
+                .filter((t) => kindFilter === "all" || t.routeKind === kindFilter)
+                .filter((t) => {
+                  const q = filterText.trim().toLowerCase();
+                  if (!q) return true;
+                  return [t.capabilityName, t.capabilitySlug, t.routeTemplate, t.externalUrl ?? ""]
+                    .join(" ")
+                    .toLowerCase()
+                    .includes(q);
+                })
+                .map((t) => {
                 const isDirty = dirtyIds.has(t.id);
                 return (
                   <tr key={t.id} className={selectedId === t.id ? "selected" : ""} onClick={() => selectFromList(t)} style={{ cursor: "pointer" }}>

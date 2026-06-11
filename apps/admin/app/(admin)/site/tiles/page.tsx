@@ -67,18 +67,39 @@ export default function TilesPage() {
       (selected.externalUrl ?? "") !== draftExternal ||
       selected.visibility !== draftVisibility);
 
+  function isValidHttpUrl(s: string): boolean {
+    try {
+      const u = new URL(s);
+      return u.protocol === "https:" || u.protocol === "http:";
+    } catch {
+      return false;
+    }
+  }
+  const externalUrlMissing = draftKind === "external" && draftExternal.trim() === "";
+  const externalUrlInvalid =
+    draftKind === "external" && draftExternal.trim() !== "" && !isValidHttpUrl(draftExternal.trim());
+  const saveBlocked = externalUrlMissing || externalUrlInvalid;
+
   async function save() {
-    if (!selected || !drawerDirty) return;
+    if (!selected || !drawerDirty || saveBlocked) return;
     setSaving(true);
     try {
       const body: Record<string, unknown> = {
         id: selected.id,
         routeKind: draftKind,
-        routeTemplate: draftTemplate,
         visibility: draftVisibility,
       };
-      if (draftKind === "external") body.externalUrl = draftExternal || null;
-      else body.externalUrl = null;
+      if (draftKind === "external") {
+        body.externalUrl = draftExternal.trim();
+        // If a URL was pasted into the route template by mistake, restore
+        // the registry default instead of publishing the URL as a template.
+        body.routeTemplate = isValidHttpUrl(draftTemplate)
+          ? `/capabilities/${selected.capabilitySlug}`
+          : draftTemplate;
+      } else {
+        body.externalUrl = null;
+        body.routeTemplate = draftTemplate;
+      }
 
       const r = await fetch("/api/admin/tiles", {
         method: "PATCH",
@@ -87,7 +108,9 @@ export default function TilesPage() {
       });
       if (!r.ok) {
         const j = await r.json().catch(() => ({}));
-        throw new Error(j?.details?.fieldErrors ? JSON.stringify(j.details.fieldErrors) : `HTTP ${r.status}`);
+        const fieldErrors = j?.details?.fieldErrors as Record<string, string[]> | undefined;
+        const firstError = fieldErrors && Object.values(fieldErrors).flat()[0];
+        throw new Error(firstError ?? `HTTP ${r.status}`);
       }
       const next = new Set(dirtyIds);
       next.add(selected.id);
@@ -194,7 +217,12 @@ export default function TilesPage() {
                       <code>{draftTemplate}</code>
                     </div>
                   </button>
-                  <button type="button" className={`radio-card ${draftKind === "external" ? "checked" : ""}`} onClick={() => setDraftKind("external")} style={{ border: 0, textAlign: "left", width: "100%" }}>
+                  <button type="button" className={`radio-card ${draftKind === "external" ? "checked" : ""}`} onClick={() => {
+                    setDraftKind("external");
+                    // Rescue a URL that was pasted into the route template
+                    // while the tile was still internal.
+                    if (!draftExternal.trim() && isValidHttpUrl(draftTemplate)) setDraftExternal(draftTemplate);
+                  }} style={{ border: 0, textAlign: "left", width: "100%" }}>
                     <span className="rdot" />
                     <div className="rt">
                       <b>External URL</b>
@@ -223,7 +251,13 @@ export default function TilesPage() {
                 <div className="field">
                   <label>External URL</label>
                   <input type="url" value={draftExternal} onChange={(e) => setDraftExternal(e.target.value)} placeholder="https://…" />
-                  <span className="help-line">Must be a valid URL · validated server-side.</span>
+                  {externalUrlMissing ? (
+                    <span className="help-line" style={{ color: "#B3261E" }}>Enter the destination URL before saving.</span>
+                  ) : externalUrlInvalid ? (
+                    <span className="help-line" style={{ color: "#B3261E" }}>Not a valid URL — it must start with https:// (or http://).</span>
+                  ) : (
+                    <span className="help-line">Must be a valid URL · validated server-side.</span>
+                  )}
                 </div>
               )}
 
@@ -237,7 +271,7 @@ export default function TilesPage() {
 
               <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", paddingTop: 6 }}>
                 <button className="btn" onClick={() => selectFromList(selected)} disabled={!drawerDirty || saving}>Discard</button>
-                <button className="btn primary" disabled={!drawerDirty || saving} onClick={save}>
+                <button className="btn primary" disabled={!drawerDirty || saving || saveBlocked} onClick={save}>
                   {saving ? "Saving…" : "Save"}
                 </button>
               </div>

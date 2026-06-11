@@ -30,33 +30,19 @@ export const GET = withSuperAdmin(async () => {
   });
 });
 
-// V0.7.1 fix #2 — cross-field consistency between routeKind and externalUrl:
+// V0.7.2 — cross-field consistency between routeKind and externalUrl:
 //   external      → externalUrl MUST be a valid URL (not null/missing)
-//   internal/soon → externalUrl MUST be null/absent
-const PatchBody = z
-  .object({
-    id: z.string(),
-    routeKind: z.enum(["internal", "external", "soon"]).optional(),
-    routeTemplate: z.string().min(1).optional(),
-    externalUrl: z.string().url().nullable().optional(),
-    visibility: z.enum(["public", "role_gated"]).optional(),
-  })
-  .refine(
-    (v) => {
-      if (v.routeKind === "external") {
-        return typeof v.externalUrl === "string" && v.externalUrl.length > 0;
-      }
-      if (v.routeKind === "internal" || v.routeKind === "soon") {
-        return v.externalUrl == null;
-      }
-      return true;
-    },
-    {
-      message:
-        "routeKind='external' requires externalUrl (URL); routeKind='internal'|'soon' requires externalUrl=null",
-      path: ["externalUrl"],
-    },
-  );
+//   internal/soon → externalUrl is forced to null automatically
+// V0.7.1 validated the patch in isolation, which 400'd legitimate partial
+// patches (e.g. a routeKind flip when the URL was already stored on the row).
+// The invariant is now checked against the MERGED state in the handler.
+const PatchBody = z.object({
+  id: z.string(),
+  routeKind: z.enum(["internal", "external", "soon"]).optional(),
+  routeTemplate: z.string().min(1).optional(),
+  externalUrl: z.string().url().nullable().optional(),
+  visibility: z.enum(["public", "role_gated"]).optional(),
+});
 
 export const PATCH = withSuperAdmin(async (req, ctx) => {
   const body = await req.json().catch(() => null);
@@ -76,6 +62,30 @@ export const PATCH = withSuperAdmin(async (req, ctx) => {
   );
   const before = beforeRows[0];
   if (!before) return NextResponse.json({ error: "not_found" }, { status: 404 });
+
+  // Validate the invariant against what the row WILL look like after the
+  // patch, falling back to the URL already stored on the row (covers a
+  // kind flip that doesn't resend the URL). internal/soon force the URL
+  // to null rather than rejecting — the admin's intent is unambiguous.
+  const mergedKind = patch.routeKind ?? before.route_kind;
+  const mergedUrl =
+    patch.externalUrl !== undefined ? patch.externalUrl : before.external_url;
+  if (mergedKind === "external" && !mergedUrl) {
+    return NextResponse.json(
+      {
+        error: "bad_request",
+        details: {
+          fieldErrors: {
+            externalUrl: ["An External URL tile needs a destination URL — enter one before saving."],
+          },
+        },
+      },
+      { status: 400 },
+    );
+  }
+  if (mergedKind !== "external" && mergedUrl != null) {
+    patch.externalUrl = null;
+  }
 
   const fields: string[] = [];
   const values: any[] = [];

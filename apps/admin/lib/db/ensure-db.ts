@@ -340,8 +340,16 @@ async function seedFreshDb(pool: Pool): Promise<void> {
       searchKeywords: c.search_keywords,
       enabled: !!c.enabled,
       route:
-        (tileByCap.get(c.id) as any)?.route_template ??
-        `/capabilities/${c.slug}`,
+        (tileByCap.get(c.id) as any)?.route_kind === "external"
+          ? ((tileByCap.get(c.id) as any)?.external_url ?? null)
+          : (tileByCap.get(c.id) as any)?.route_kind === "soon"
+            ? null
+            : ((tileByCap.get(c.id) as any)?.route_template ??
+              `/capabilities/${c.slug}`),
+      routeKind: ((tileByCap.get(c.id) as any)?.route_kind ?? "internal") as
+        | "internal"
+        | "external"
+        | "soon",
     })),
     blocks: (
       await pool.query(

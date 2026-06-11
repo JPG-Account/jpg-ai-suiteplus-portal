@@ -18,6 +18,15 @@ const FILTERS: { label: string; value: "all" | LaneName }[] = [
   { label: "Industry", value: "AI for Industry / Domain" },
 ];
 
+// A tile is clickable only when its published route resolves to a real
+// destination: external URLs always do; "soon" tiles never do; internal
+// templates with unresolved {placeholders} can't be opened from the showcase.
+function tileHref(s: Solution): string | null {
+  if (!s.route || s.routeKind === "soon") return null;
+  if (s.routeKind === "external") return s.route;
+  return s.route.includes("{") ? null : s.route;
+}
+
 export function Capabilities({ solutions }: CapabilitiesProps) {
   const [filter, setFilter] = useState<"all" | LaneName>("all");
   const [query, setQuery] = useState("");
@@ -90,29 +99,46 @@ export function Capabilities({ solutions }: CapabilitiesProps) {
         </div>
 
         <div className="solution-grid">
-          {visible.map((s) => (
-            <article className="solution-card" key={s.id}>
-              <div className="solution-top">
-                <div>
-                  <div className="sol-type">{s.type}</div>
-                  <h3>{s.name}</h3>
-                </div>
-                <span className={`badge ${s.status}`}>{statusBadgeLabel[s.status]}</span>
-              </div>
-              <p>{s.description}</p>
-              <div className="feature-list">
-                {s.features.map((f) => (
-                  <div key={f}>
-                    <span className="dot" />
-                    <span>{f}</span>
+          {visible.map((s) => {
+            const href = tileHref(s);
+            const inner = (
+              <>
+                <div className="solution-top">
+                  <div>
+                    <div className="sol-type">{s.type}</div>
+                    <h3>{s.name}</h3>
                   </div>
-                ))}
-              </div>
-              <div className="sol-art">
-                <SolutionArt id={s.id} />
-              </div>
-            </article>
-          ))}
+                  <span className={`badge ${s.status}`}>{statusBadgeLabel[s.status]}</span>
+                </div>
+                <p>{s.description}</p>
+                <div className="feature-list">
+                  {s.features.map((f) => (
+                    <div key={f}>
+                      <span className="dot" />
+                      <span>{f}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="sol-art">
+                  <SolutionArt id={s.id} />
+                </div>
+              </>
+            );
+            return href ? (
+              <a
+                className="solution-card"
+                key={s.id}
+                href={href}
+                target={s.routeKind === "external" ? "_blank" : undefined}
+                rel={s.routeKind === "external" ? "noopener noreferrer" : undefined}
+                aria-label={`Open ${s.name}`}
+              >
+                {inner}
+              </a>
+            ) : (
+              <article className="solution-card" key={s.id}>{inner}</article>
+            );
+          })}
         </div>
       </div>
     </section>

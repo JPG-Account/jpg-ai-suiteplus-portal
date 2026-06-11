@@ -31,6 +31,7 @@ export type Solution = {
   searchKeywords: string;
   enabled: boolean;
   route?: string;
+  routeKind?: "internal" | "external" | "soon";
 };
 
 export type Lane = {
@@ -122,7 +123,8 @@ function adaptBundle(raw: AdminResponse): ConfigBundle {
     features: s.features ?? [],
     searchKeywords: s.searchKeywords ?? "",
     enabled: !!s.enabled,
-    route: s.route,
+    route: s.route ?? undefined,
+    routeKind: s.routeKind ?? "internal",
   }));
   const heroBlock = raw.bundle.blocks?.find((b) => b.type === "hero");
   const hero: HeroBlockFields = (heroBlock?.fields as HeroBlockFields) ?? FALLBACK_BUNDLE.hero;

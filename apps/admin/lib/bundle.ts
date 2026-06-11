@@ -25,7 +25,8 @@ export type ConfigBundle = {
     features: string[];
     searchKeywords: string;
     enabled: boolean;
-    route: string;
+    route: string | null;
+    routeKind: "internal" | "external" | "soon";
   }[];
   blocks: {
     id: string;
@@ -82,7 +83,14 @@ export async function buildBundleFromDb(): Promise<ConfigBundle> {
   }));
 
   const solutions = capRows.map((c: any) => {
-    const tile = tileByCap.get(c.id);
+    const tile = tileByCap.get(c.id) as any;
+    const routeKind = (tile?.route_kind ?? "internal") as "internal" | "external" | "soon";
+    // external → the validated external_url; soon → no destination;
+    // internal → route_template (registry-resolved path)
+    const route =
+      routeKind === "external" ? (tile?.external_url ?? null)
+      : routeKind === "soon" ? null
+      : (tile?.route_template ?? `/capabilities/${c.slug}`);
     return {
       id: c.slug,
       name: c.name,
@@ -97,7 +105,8 @@ export async function buildBundleFromDb(): Promise<ConfigBundle> {
       features: JSON.parse(c.features_json),
       searchKeywords: c.search_keywords,
       enabled: !!c.enabled,
-      route: (tile as any)?.route_template ?? `/capabilities/${c.slug}`,
+      route,
+      routeKind,
     };
   });
 

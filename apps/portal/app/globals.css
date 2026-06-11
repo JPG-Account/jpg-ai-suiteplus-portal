@@ -148,6 +148,7 @@ button,input{font:inherit}
 .searchbar input::placeholder{color:#7A8A92}
 
 .solution-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+a.solution-card{text-decoration:none;color:inherit;cursor:pointer}
 .solution-card{position:relative;background:#fff;border:1px solid rgba(13,53,60,.08);border-radius:24px;padding:24px;box-shadow:var(--shadow-card);display:flex;flex-direction:column;min-height:380px;overflow:hidden;transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease}
 .solution-card:before{content:"";position:absolute;left:0;top:0;right:0;height:3px;background:var(--grad-1);transform:scaleX(.0);transform-origin:left;transition:transform .4s ease}
 .solution-card:after{content:"";position:absolute;inset:auto -50px -50px auto;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle, rgba(0,151,172,.10), rgba(0,151,172,0) 70%);transition:transform .4s ease}

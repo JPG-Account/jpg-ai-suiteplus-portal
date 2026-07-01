@@ -83,7 +83,7 @@ jobs:
 
       - name: Extract image metadata
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ${{ env.REGISTRY }}/${{ env.ORG }}/${{ matrix.app.image }}
           # Lowercase ORG (GHCR rejects uppercase) handled by metadata-action automatically.
